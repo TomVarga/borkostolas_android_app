@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -48,8 +50,7 @@ public class Main extends Activity {
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = ProgressDialog.show(Main.this, "",
-                        "Validating user...", true);
+                dialog = ProgressDialog.show(Main.this, "", "Felhasználó hitelesítése...", true);
                 new Thread(new Runnable() {
                     public void run() {
                         login();
@@ -84,16 +85,20 @@ public class Main extends Activity {
                 }
             });
 
-            if(response.equalsIgnoreCase("User Found")){
+            if(response.equalsIgnoreCase("No Such User Found")){
+                showAlert();
+            }else{
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(Main.this,R.string.action_successfulLogin, Toast.LENGTH_SHORT).show();
                     }
                 });
 
-                startActivity(new Intent(Main.this, UserPage.class));
-            }else{
-                showAlert();
+                JSONObject obj = new JSONObject(response);
+                int user_id = obj.getInt("user_id");
+                Intent intent = new Intent(Main.this, UserPage.class);
+                intent.putExtra("user_id", user_id);
+                startActivity(intent);
             }
 
         }catch(Exception e){
@@ -106,7 +111,7 @@ public class Main extends Activity {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
                 builder.setTitle(R.string.error_loginError);
-                builder.setMessage("User not Found.")
+                builder.setMessage(R.string.error_userNotFound)
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {

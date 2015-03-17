@@ -7,5 +7,9 @@
     <string name="action_logout">Kijelentkezés</string>
     <string name="action_login">Bejelentkezés</string>
     <string name="action_successfulLogin">Sikeres bejelentkezés</string>
+    <string name="action_userValidation">Felhasználó hitelesítése...</string>
+
     <string name="error_loginError">Bejelentkezési hiba</string>
+    <string name="error_userNotFound">Nem található a felhasználó</string>
+
 </resources>
