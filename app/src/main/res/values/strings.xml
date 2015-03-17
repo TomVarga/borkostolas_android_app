@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Borkóstolás</string>
+
+    <string name="hello_world">Szia világ!</string>
+    <string name="action_settings">Beállítások</string>
+    <string name="action_ertekel">Értékel</string>
+    <string name="action_logout">Kijelentkezés</string>
+    <string name="action_login">Bejelentkezés</string>
+    <string name="action_successfulLogin">Sikeres bejelentkezés</string>
+    <string name="error_loginError">Bejelentkezési hiba</string>
+</resources>
