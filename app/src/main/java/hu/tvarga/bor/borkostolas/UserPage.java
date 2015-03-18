@@ -1,9 +1,11 @@
 package hu.tvarga.bor.borkostolas;
 
+import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -37,7 +39,8 @@ public class UserPage extends Activity {
         final int user_id = extras.getInt("user_id");
         final TextView content = (TextView) findViewById(R.id.contentTV);
 
-
+        LocalDAO lDAO = new LocalDAO(getBaseContext());
+        SQLiteDatabase db = lDAO.getDB();
 
         new Thread(new Runnable() {
             public void run() {
@@ -55,6 +58,7 @@ public class UserPage extends Activity {
 //                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
 //                    final String response = httpclient.execute(httppost, responseHandler);
 //                    System.out.println("Response : " + response);
+
 
 
                     RemoteDAO dao;
