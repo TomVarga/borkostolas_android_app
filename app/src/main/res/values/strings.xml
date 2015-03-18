@@ -11,6 +11,7 @@
 
     <string name="error_loginError">Bejelentkezési hiba</string>
     <string name="error_userNotFound">Nem található a felhasználó</string>
+    <string name="error_noNetworkAccess">Az internet nem elérhető!</string>
 
     <string name="button_getWinesfromRemoteDB">Elérhető bor adatbázis frissítése</string>
 

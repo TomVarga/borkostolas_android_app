@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.apache.http.HttpResponse;
@@ -51,23 +52,30 @@ public class UserPage extends Activity {
                 new Thread(new Runnable() {
                     public void run() {
                         try{
-                            RemoteDAO dao;
-                            dao = new RemoteDAO();
-                            wines = dao.getWines();
+                            if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+                                RemoteDAO dao;
+                                dao = new RemoteDAO();
+                                wines = dao.getWines();
 
 
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String s = "";
+                                        for (int i = 0; i < wines.size(); i++) {
+                                            s = s + wines.get(i).toString() + "\n";
+                                        }
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String s = "";
-                                    for (int i = 0; i < wines.size(); i++){
-                                        s = s + wines.get(i).toString() + "\n";
+                                        content.setText("Response from PHP : " + s);
                                     }
-                                    content.setText(NetworkChecker.haveNetworkConnection(getBaseContext()) ? "van" : "nincs");
-//                                    content.setText("Response from PHP : " + s);
-                                }
-                            });
+                                });
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(UserPage.this, R.string.error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
                         }catch(Exception e){
                             System.out.println("Exception : " + e.getMessage());
                         }
