@@ -1,27 +1,25 @@
 package hu.tvarga.bor.borkostolas;
 
-import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.LocalDAO;
-import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.RemoteDAO;
+import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
+import hu.tvarga.bor.borkostolas.model.LocalDAO;
+import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserPage extends Activity {
@@ -29,22 +27,57 @@ public class UserPage extends Activity {
     HttpResponse response;
     HttpClient httpclient;
     List<NameValuePair> nameValuePairs;
+    List<Wine> wines;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.userpage);
+        setContentView(R.layout.activity_userpage);
 
         Bundle extras = getIntent().getExtras();
         final int user_id = extras.getInt("user_id");
         final TextView content = (TextView) findViewById(R.id.contentTV);
 
+
         LocalDAO lDAO = new LocalDAO(getBaseContext());
         SQLiteDatabase db = lDAO.getDB();
 
-        new Thread(new Runnable() {
-            public void run() {
-                try{
+        Button btnUpdateWines = (Button) findViewById(R.id.btnGetWinesFromRemoteDB);
+
+        btnUpdateWines.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        try{
+                            RemoteDAO dao;
+                            dao = new RemoteDAO();
+                            wines = dao.getWines();
+
+
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String s = "";
+                                    for (int i = 0; i < wines.size(); i++){
+                                        s = s + wines.get(i).toString() + "\n";
+                                    }
+                                    content.setText(NetworkChecker.haveNetworkConnection(getBaseContext()) ? "van" : "nincs");
+//                                    content.setText("Response from PHP : " + s);
+                                }
+                            });
+                        }catch(Exception e){
+                            System.out.println("Exception : " + e.getMessage());
+                        }
+                    }
+                }).start();
+            }
+        });
+
+
+
 
 //                    httpclient=new DefaultHttpClient();
 //                    httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
@@ -61,24 +94,12 @@ public class UserPage extends Activity {
 
 
 
-                    RemoteDAO dao;
-                    dao = new RemoteDAO();
-                    List<Wine> wines = dao.getWines();
-                    String s = "";
-                    for (int i = 0; i < wines.size(); i++){
-                        s = s + wines.get(i).toString() + "\n";
-                    }
 
 
 
-                    content.setText("Response from PHP : " + s);
 
 
-                }catch(Exception e){
-                    System.out.println("Exception : " + e.getMessage());
-                }
-            }
-        }).start();
+
         content.setText("poop");
     }
 }

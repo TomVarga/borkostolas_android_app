@@ -1,7 +1,6 @@
-package hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model;
+package hu.tvarga.bor.borkostolas.model;
 
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -10,10 +9,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.tvarga.bor.borkostolas.controller.JSONParser;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 public class RemoteDAO implements DAO {
@@ -43,14 +42,7 @@ public class RemoteDAO implements DAO {
             JSONArray jsonArray = new JSONArray(result);
             for (int i=0; i < jsonArray.length(); i++ ){
                 JSONObject obj = (JSONObject) jsonArray.get(i);
-                int wine_id = obj.getInt("wine_id");
-                String wine_name = obj.getString("wine_name");
-                String wine_winery = obj.getString("wine_winery");
-                String wine_location = obj.getString("wine_location");
-                int wine_year = obj.getInt("wine_year");
-                String wine_composition = obj.getString("wine_composition");
-                int wine_price = obj.getInt("wine_price");
-                Wine wine = new Wine(wine_id, wine_name, wine_winery, wine_location, wine_year, wine_composition, wine_price);
+                Wine wine = JSONParser.getWineFromJSONObj(obj);
                 wines.add(wine);
             }
             System.out.println("Response : " + result);

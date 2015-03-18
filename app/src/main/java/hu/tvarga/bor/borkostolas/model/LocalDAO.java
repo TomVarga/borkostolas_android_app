@@ -1,18 +1,14 @@
-package hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model;
+package hu.tvarga.bor.borkostolas.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.File;
 import java.util.List;
 
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
-/**
- * Created by Calebzor on 3/18/2015.
- */
 public class LocalDAO extends SQLiteOpenHelper implements DAO {
 
     private SQLiteDatabase db;

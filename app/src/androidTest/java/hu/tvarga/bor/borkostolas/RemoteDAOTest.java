@@ -1,19 +1,6 @@
 package hu.tvarga.bor.borkostolas;
 
-import android.test.ActivityUnitTestCase;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-
-import java.sql.SQLException;
-
-import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.RemoteDAO;
-import hu.tvarga.bor.borkostolas.model.bean.Wine;
+import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 
 /**
  * Created by Calebzor on 3/18/2015.

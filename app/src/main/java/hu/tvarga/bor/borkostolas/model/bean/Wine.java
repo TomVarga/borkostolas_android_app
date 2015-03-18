@@ -71,9 +71,9 @@ public class Wine {
         this.wine_name = wine_name;
         this.wine_winery = wine_winery;
         this.wine_location = wine_location;
-        this.wine_year = wine_year;
         this.wine_composition = wine_composition;
-        this.wine_price = wine_price;
+        if (wine_year != -1) this.wine_year = wine_year;
+        if (wine_price != -1) this.wine_price = wine_price;
     }
 
     @Override

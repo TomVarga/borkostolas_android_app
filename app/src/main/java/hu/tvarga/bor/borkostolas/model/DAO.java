@@ -1,4 +1,4 @@
-package hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model;
+package hu.tvarga.bor.borkostolas.model;
 
 import java.util.List;
 
