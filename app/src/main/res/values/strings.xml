@@ -8,10 +8,13 @@
     <string name="action_login">Bejelentkezés</string>
     <string name="action_successfulLogin">Sikeres bejelentkezés</string>
     <string name="action_userValidation">Felhasználó hitelesítése...</string>
+    <string name="action_wineDBUpdateSucces">Bor adatbázis frissítve!</string>
+    <string name="action_wineDBUpdateFail">Bor adatbázis hiba!</string>
 
     <string name="error_loginError">Bejelentkezési hiba</string>
     <string name="error_userNotFound">Nem található a felhasználó</string>
     <string name="error_noNetworkAccess">Az internet nem elérhető!</string>
+
 
     <string name="button_getWinesfromRemoteDB">Elérhető bor adatbázis frissítése</string>
 

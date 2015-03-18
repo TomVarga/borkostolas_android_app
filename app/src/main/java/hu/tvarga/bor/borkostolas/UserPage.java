@@ -1,11 +1,13 @@
 package hu.tvarga.bor.borkostolas;
 
+import hu.tvarga.bor.borkostolas.controller.DBSyncController;
 import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ public class UserPage extends Activity {
     HttpClient httpclient;
     List<NameValuePair> nameValuePairs;
     List<Wine> wines;
+    Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,10 @@ public class UserPage extends Activity {
         final int user_id = extras.getInt("user_id");
         final TextView content = (TextView) findViewById(R.id.contentTV);
 
-
-        LocalDAO lDAO = new LocalDAO(getBaseContext());
+        context = getBaseContext();
+        LocalDAO lDAO = new LocalDAO(context);
         SQLiteDatabase db = lDAO.getDB();
+        final DBSyncController dbSyncController = new DBSyncController();
 
         Button btnUpdateWines = (Button) findViewById(R.id.btnGetWinesFromRemoteDB);
 
@@ -56,19 +60,27 @@ public class UserPage extends Activity {
                                 RemoteDAO dao;
                                 dao = new RemoteDAO();
                                 wines = dao.getWines();
+                                if (wines.size() > 0){
+                                    final boolean updateSucceeded = dbSyncController.updateLocalWineDatabase(context, wines);
 
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String s = "";
-                                        for (int i = 0; i < wines.size(); i++) {
-                                            s = s + wines.get(i).toString() + "\n";
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_wineDBUpdateSucces : R.string.action_wineDBUpdateFail, Toast.LENGTH_SHORT).show();
                                         }
+                                    });
 
-                                        content.setText("Response from PHP : " + s);
-                                    }
-                                });
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String s = "";
+                                            for (int i = 0; i < wines.size(); i++) {
+                                                s = s + wines.get(i).toString() + "\n";
+                                            }
+
+                                            content.setText("Response from PHP : " + s);
+                                        }
+                                    });
+                                }
                             }else{
                                 runOnUiThread(new Runnable() {
                                     public void run() {
