@@ -1,7 +1,9 @@
 package hu.tvarga.bor.borkostolas;
 
-import android.app.Activity;
+import hu.tvarga.bor.borkostolas.hu.tvarga.bor.borkostolas.model.RemoteDAO;
+import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -35,24 +37,37 @@ public class UserPage extends Activity {
         final int user_id = extras.getInt("user_id");
         final TextView content = (TextView) findViewById(R.id.contentTV);
 
+
+
         new Thread(new Runnable() {
             public void run() {
                 try{
 
-                    httpclient=new DefaultHttpClient();
-                    httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
-                    //add your data
-                    nameValuePairs = new ArrayList<>(2);
-                    // Always use the same variable name for posting i.e the android side variable name and php side variable name should be similar,
-                    nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));  // $Edittext_value = $_POST['Edittext_value'];
-                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    //Execute HTTP Post Request
-                    response=httpclient.execute(httppost);
-                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                    final String response = httpclient.execute(httppost, responseHandler);
-                    System.out.println("Response : " + response);
+//                    httpclient=new DefaultHttpClient();
+//                    httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
+//                    //add your data
+//                    nameValuePairs = new ArrayList<>(2);
+//                    // Always use the same variable name for posting i.e the android side variable name and php side variable name should be similar,
+//                    nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));  // $Edittext_value = $_POST['Edittext_value'];
+//                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//                    //Execute HTTP Post Request
+//                    response=httpclient.execute(httppost);
+//                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
+//                    final String response = httpclient.execute(httppost, responseHandler);
+//                    System.out.println("Response : " + response);
 
-                    content.setText("Response from PHP : " + response);
+
+                    RemoteDAO dao;
+                    dao = new RemoteDAO();
+                    List<Wine> wines = dao.getWines();
+                    String s = "";
+                    for (int i = 0; i < wines.size(); i++){
+                        s = s + wines.get(i).toString() + "\n";
+                    }
+
+
+
+                    content.setText("Response from PHP : " + s);
 
 
                 }catch(Exception e){
@@ -60,5 +75,6 @@ public class UserPage extends Activity {
                 }
             }
         }).start();
+        content.setText("poop");
     }
 }
