@@ -217,7 +217,7 @@
                 <Button
                     android:layout_width="fill_parent"
                     android:layout_height="32dp"
-                    android:text="Értékelés elküldése"
+                    android:text="Értékelések elküldése"
                     android:id="@+id/buttonSubmitScore"
                     android:textSize="10sp" />
             </LinearLayout>

@@ -9,10 +9,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.tvarga.bor.borkostolas.model.bean.Score;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
+
+import static hu.tvarga.bor.borkostolas.controller.JSONParser.dateToString;
+import static hu.tvarga.bor.borkostolas.controller.JSONParser.stringToDate;
 
 public class LocalDAO extends SQLiteOpenHelper implements DAO {
 
@@ -23,13 +29,14 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
 
     // Database creation sql statement
     private static final String DATABASE_CREATE_WINES =
-        "CREATE TABLE IF NOT EXISTS `wines` (\"wine_id\" INTEGER PRIMARY KEY NOT NULL UNIQUE , \"wine_name\" VARCHAR NOT NULL , \"wine_winery\" VARCHAR NOT NULL , \"wine_location\" VARCHAR NOT NULL , \"wine_year\" INTEGER, \"wine_composition\" VARCHAR NOT NULL , \"wine_price\" INTEGER);";
+            "CREATE TABLE IF NOT EXISTS `wines` (\"wine_id\" INTEGER PRIMARY KEY NOT NULL UNIQUE , \"wine_name\" VARCHAR NOT NULL , \"wine_winery\" VARCHAR NOT NULL , \"wine_location\" VARCHAR NOT NULL , \"wine_year\" INTEGER, \"wine_composition\" VARCHAR NOT NULL , \"wine_price\" INTEGER);";
     private static final String DATABASE_CREATE_SCORES =
-        "CREATE TABLE IF NOT EXISTS `scores` (\"user_id\" INTEGER, \"wine_id\" INTEGER, \"score\" DOUBLE, \"timestamp\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP);";
+            "CREATE TABLE IF NOT EXISTS `scores` (\"user_id\" INTEGER, \"wine_id\" INTEGER, \"score\" DOUBLE, \"timestamp\" DATETIME NOT NULL  DEFAULT CURRENT_TIMESTAMP);";
 
     public LocalDAO(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+        System.out.println("lDAO created");
     }
 
     // Method is called during creation of the database
@@ -66,8 +73,7 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
     public void onUpgrade(SQLiteDatabase database,int oldVersion,int newVersion){
         Log.w(LocalDAO.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
-        database.execSQL("DROP TABLE IF EXISTS MyEmployees");
+                        + newVersion + ", which will destroy all oldoyees");
         onCreate(database);
     }
 
@@ -91,10 +97,6 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
         return true;
     }
 
-    @Override
-    public boolean addOrUpdateWineScore(Wine wine, int user_id, int score) {
-        return false;
-    }
 
     @Override
     public ArrayList<Wine> getWines() {
@@ -121,5 +123,108 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
         }
         db.close();
         return wines;
+    }
+
+    public double getScore(int user_id, int wine_id){
+        String[] tableColumns = new String[] { "score" };
+        String whereClause = "user_id =? AND wine_id =?";
+        String[] whereArgs = new String[]{ user_id + "", wine_id + "" };
+
+        SQLiteDatabase db = getDB();
+        Cursor cursor = db.query("scores", tableColumns, whereClause, whereArgs, null, null, null);
+
+        // cursor.moveToFirst() aka there was result
+        boolean resultsFound = cursor.moveToFirst();
+        double score = -1;
+        if (resultsFound){
+            score = Double.parseDouble(cursor.getString(0));
+        }
+        db.close();
+        return score;
+    }
+
+    @Override
+    public ArrayList<Score> getScores(int user_id) {
+        ArrayList<Score> scores = new ArrayList<>();
+
+        String whereClause = "user_id =?";
+        String[] whereArgs = new String[]{ user_id + "" };
+
+        SQLiteDatabase db = getDB();
+        Cursor cursor = db.query("scores", null, whereClause, whereArgs, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String sTimestamp = cursor.getString(3);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                java.util.Date timestamp = null;
+                try {
+                    timestamp = dateFormat.parse(sTimestamp);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Score score = new Score(
+                        Integer.parseInt(cursor.getString(0)),
+                        Integer.parseInt(cursor.getString(1)),
+                        Double.parseDouble(cursor.getString(2)),
+                        timestamp
+                );
+                scores.add(score);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return scores;
+    }
+
+    @Override
+    public boolean addOrUpdateScore(Score remoteScore) {
+        String whereClause = "user_id =? AND wine_id =?";
+        String[] whereArgs = new String[]{ remoteScore.getUser_id() + "", remoteScore.getWine_id() + "" };
+
+        SQLiteDatabase db = getDB();
+        Cursor cursor = db.query("scores", null, whereClause, whereArgs, null, null, null);
+
+        // cursor.moveToFirst() aka there was result
+        boolean resultsFound = cursor.moveToFirst();
+        if (resultsFound){
+            String sTimestamp = cursor.getString(3);
+            java.util.Date timestamp = null;
+            try {
+                timestamp = stringToDate(sTimestamp);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Score localScore = new Score(
+                    Integer.parseInt(cursor.getString(0)),
+                    Integer.parseInt(cursor.getString(1)),
+                    Integer.parseInt(cursor.getString(2)),
+                    timestamp
+            );
+            // don't update if scores are equal or the remote score was before the local one
+            if (localScore.getScore() == remoteScore.getScore() || remoteScore.getTimestamp().before(localScore.getTimestamp())){
+                db.close();
+                return false;
+            }
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("user_id", remoteScore.getUser_id());
+        contentValues.put("wine_id", remoteScore.getWine_id());
+        contentValues.put("score", remoteScore.getScore());
+        contentValues.put("timestamp", dateToString(remoteScore.getTimestamp()));
+
+        deleteScore(remoteScore);
+        db.insert("scores", null, contentValues);
+        System.out.println("LocalDAO added : " + remoteScore.toString() );
+
+        db.close();
+        return true;
+    }
+
+    private boolean deleteScore(Score score) {
+        SQLiteDatabase db = getDB();
+        int rowsDeleted = db.delete("scores", "user_id = ? AND wine_id=?", new String[] { score.getUser_id() + "", score.getWine_id() + "" });
+        System.out.println("LocalDAO deleted : " + score.toString() );
+        db.close();
+        return (rowsDeleted > 0);
     }
 }

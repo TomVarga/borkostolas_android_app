@@ -4,6 +4,8 @@ import hu.tvarga.bor.borkostolas.controller.DBSyncController;
 import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.model.RemoteDAO;
+import hu.tvarga.bor.borkostolas.model.bean.Score;
+import hu.tvarga.bor.borkostolas.model.bean.ScoredWine;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import android.app.ActionBar;
@@ -13,14 +15,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -37,6 +44,7 @@ import org.apache.http.client.methods.HttpPost;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UserPage extends Activity {
@@ -44,59 +52,12 @@ public class UserPage extends Activity {
     HttpResponse response;
     HttpClient httpclient;
     List<NameValuePair> nameValuePairs;
-    ArrayList<Wine> wines;
+    ArrayList<Wine> localWines;
+    ArrayList<Score> localScores;
+    ArrayList<Wine> remoteWines;
+    ArrayList<Score> remoteScores;
+    ArrayList<ScoredWine> localScoredWines;
     Context context;
-
-    public void createTableRows(List<Wine> wines){
-//        TableLayout winesTable = (TableLayout) findViewById(R.id.winesTable);
-
-        for (int i = 0; i < wines.size(); i++) {
-
-            TableRow row = new TableRow(this);
-//
-//            LinearLayout left = new LinearLayout(this);
-//            left.setOrientation(LinearLayout.HORIZONTAL);
-//            left.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT, 0.7f));
-//
-//            Button button = new Button(this);
-//            button.setGravity(Gravity.CENTER);
-//            button.setText(wines.get(i).getWine_name());
-////            button.setTag(1, wines.get(i).getWine_id());
-////            button.setWidth(LinearLayout.LayoutParams.FILL_PARENT);
-////            button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
-//
-//            left.addView(button);
-//
-//            LinearLayout right = new LinearLayout(this);
-//            right.setOrientation(LinearLayout.HORIZONTAL);
-//            right.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT, 0.3f));
-//            right.setGravity(Gravity.RIGHT);
-//
-//            TextView scoreTV = new TextView(this);
-////            scoreTV.setText(wines.get(i).getWine_price() + "");
-//            scoreTV.setText("100");
-//            scoreTV.setGravity(Gravity.CENTER);
-////            scoreTV.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
-//
-//            right.addView(scoreTV);
-//
-//            row.addView(left);
-//            row.addView(right);
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT);
-            row.setLayoutParams(lp);
-            Button button = new Button(this);
-            TextView score = new TextView(this);
-            score.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT, 0.3f));
-            button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT, 0.7f));
-            button.setText(wines.get(i).getWine_name());
-            score.setText("10");
-            row.addView(score);
-            row.addView(button);
-//            winesTable.addView(row,i);
-//            TableRow wineRow = (TableRow) findViewById(R.id.wineRow);
-
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,11 +82,11 @@ public class UserPage extends Activity {
                     public void run() {
                         try{
                             if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
-                                RemoteDAO dao;
-                                dao = new RemoteDAO();
-                                wines = dao.getWines();
-                                if (wines.size() > 0){
-                                    final boolean updateSucceeded = dbSyncController.updateLocalWineDatabase(context, wines);
+                                RemoteDAO dao = new RemoteDAO();
+                                remoteWines = dao.getWines();
+
+                                if (remoteWines.size() > 0){
+                                    final boolean updateSucceeded = dbSyncController.updateLocalWineDatabase(context, remoteWines);
 
                                     runOnUiThread(new Runnable() {
                                         public void run() {
@@ -137,8 +98,8 @@ public class UserPage extends Activity {
                                         @Override
                                         public void run() {
                                             String s = "";
-                                            for (int i = 0; i < wines.size(); i++) {
-                                                s = s + wines.get(i).toString() + "\n";
+                                            for (int i = 0; i < remoteWines.size(); i++) {
+                                                s = s + remoteWines.get(i).toString() + "\n";
                                             }
 
                                             content.setText("Response from PHP : " + s);
@@ -162,27 +123,53 @@ public class UserPage extends Activity {
 
 
         LocalDAO lDAO = new LocalDAO(context);
-        wines = lDAO.getWines();
-        System.out.println("wine size: " + wines.size());
-        if (wines.size() > 0) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    String s = "";
-                    for (int i = 0; i < wines.size(); i++) {
-                        s = s + wines.get(i).toString() + "\n";
-                    }
+        localWines = lDAO.getWines();
+        localScoredWines = new ArrayList<>();
 
-                    content.setText("Local wines : " + s);
-                }
-            });
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                    createTableRows(wines);
-                }
-            });
+        if (localWines.size() > 0){
+            for (int i = 0; i < localWines.size(); i++){
+                Wine lWine = localWines.get(i);
+                double lScore =  lDAO.getScore(user_id, lWine.getWine_id());
+                double score = (lScore > 0) ? lScore : -1;
+
+                //wine_id, wine_name, wine_winery, wine_location, wine_year, wine_composition, wine_price
+                ScoredWine scoredWine = new ScoredWine(
+                        lWine.getWine_id(),
+                        lWine.getWine_name(),
+                        lWine.getWine_winery(),
+                        lWine.getWine_location(),
+                        lWine.getWine_year(),
+                        lWine.getWine_composition(),
+                        lWine.getWine_price(),
+                        score,
+                        user_id
+                );
+//                System.out.println(scoredWine.toString());
+                localScoredWines.add(scoredWine);
+            }
         }
+
+
+//        System.out.println("wine size: " + localWines.size());
+//        if (localWines.size() > 0) {
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    String s = "";
+//                    for (int i = 0; i < localWines.size(); i++) {
+//                        s = s + localWines.get(i).toString() + "\n";
+//                    }
+//
+//                    content.setText("Local wines : " + s);
+//                }
+//            });
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+////                    createTableRows(wines);
+//                }
+//            });
+//        }
 
 //        String[] winesArray = new String[wines.size()];
 //        for (int i=0; i < wines.size(); i++){
@@ -193,29 +180,84 @@ public class UserPage extends Activity {
 //        ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {"a", "b", "c"});
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, winesArray);
-        WinesAdapter adapter = new WinesAdapter(this, wines);
+        WinesAdapter adapter = new WinesAdapter(this, localScoredWines);
         ListView winesList = (ListView) findViewById(R.id.winesList);
         winesList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         winesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("position: "+position);
-                System.out.println("win in position: "+wines.get(position).getWine_name());
+                ScoredWine wine = localScoredWines.get(position);
                 TextView detailsWineNameTV = (TextView) findViewById(R.id.detailsWineName);
-                detailsWineNameTV.setText(wines.get(position).getWine_name());
-                runOnUiThread(new Runnable() {
-                    public void run() {
-
-                        Toast.makeText(UserPage.this, "clicked list item", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                detailsWineNameTV.setText(wine.getWine_name());
+                TextView detailsWineryTV = (TextView) findViewById(R.id.detailsWineryTV);
+                detailsWineryTV.setText(wine.getWine_winery());
+                TextView detailsLocationTV = (TextView) findViewById(R.id.detailsLocationTV);
+                detailsLocationTV.setText(wine.getWine_location());
+                TextView detailsYearTV = (TextView) findViewById(R.id.detailsYearTV);
+                detailsYearTV.setText(wine.getWine_year() + "");
+                TextView detailsCompositionTV = (TextView) findViewById(R.id.detailsCompositionTV);
+                detailsCompositionTV.setText(wine.getWine_composition());
+                TextView detailsPriceTV = (TextView) findViewById(R.id.detailsPriceTV);
+                detailsPriceTV.setText(wine.getWine_price() + "");
+                EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+                double score = wine.getWine_score();
+                scoreET.setText((score > 0) ? (score + "") : "");
+                scoreET.setTag(wine);
             }
         });
         winesList.setAdapter(adapter);
 
+        EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+        scoreET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
+            public void onFocusChange(View v, boolean hasFocus) {
+                EditText et = (EditText) v;
+                if(!hasFocus) {
+                    ScoredWine wine = (ScoredWine) v.getTag();
+                    double nScore = Double.parseDouble(et.getText().toString());
+                    wine.setWine_score(nScore);
+                    Score score = new Score(wine.getUser_id(), wine.getWine_id(), nScore, new Date());
+                    LocalDAO lDAO = new LocalDAO(context);
+                    lDAO.addOrUpdateScore(score);
+                    // TODO: should probably update listview here but need adapter reference
+                    System.out.println("focus lost on ET" + wine.toString());
+                }
+            }
+        });
+        Button btnSyncScore = (Button) findViewById(R.id.buttonSubmitScore);
+        btnSyncScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        try{
+                            if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+                                RemoteDAO dao = new RemoteDAO();
+                                remoteScores = dao.getScores(user_id);
+                                if (remoteScores.size() > 0) {
+                                    final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user_id);
 
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_scoreSyncSuccess : R.string.action_scoreSyncFail, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(UserPage.this, R.string.error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }catch(Exception e){
+                            System.out.println("Exception : " + e.getMessage());
+                        }
+                    }
+                }).start();
+            }
+        });
 
 
 
@@ -244,15 +286,15 @@ public class UserPage extends Activity {
     }
 
 
-    public class WinesAdapter extends ArrayAdapter<Wine> {
+    public class WinesAdapter extends ArrayAdapter<ScoredWine> {
 
-        public WinesAdapter(Context context, ArrayList<Wine> wines) {
+        public WinesAdapter(Context context, ArrayList<ScoredWine> wines) {
             super(context, 0, wines);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Wine wine = getItem(position);
+            ScoredWine wine = getItem(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.winerow, parent, false);
@@ -262,8 +304,8 @@ public class UserPage extends Activity {
             TextView tvScore = (TextView) convertView.findViewById(R.id.wineRowScore);
 
             tvName.setText(wine.getWine_name());
-
-//            convertView.setTag(1, wine.getWine_id());
+            double score = wine.getWine_score();
+            tvScore.setText((score > 0) ? (score + "") : "");
 
             return convertView;
         }

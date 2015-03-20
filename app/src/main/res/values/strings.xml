@@ -17,5 +17,7 @@
 
 
     <string name="button_getWinesfromRemoteDB">Elérhető bor adatbázis frissítése</string>
+    <string name="action_scoreSyncSuccess">Értékelések szinkronizálva!</string>
+    <string name="action_scoreSyncFail">Értékelés szinkronizációs hiba!</string>
 
 </resources>

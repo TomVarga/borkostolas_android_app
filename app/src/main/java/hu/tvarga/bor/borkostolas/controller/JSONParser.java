@@ -2,9 +2,14 @@ package hu.tvarga.bor.borkostolas.controller;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import hu.tvarga.bor.borkostolas.model.bean.Score;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 public class JSONParser {
+    static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static Wine getWineFromJSONObj(JSONObject obj){
         Wine wine;
@@ -24,5 +29,30 @@ public class JSONParser {
             System.out.println("Exception : " + e.getMessage());
         }
         return null;
+    }
+
+    public static Score getScoreFromJSONObj(JSONObject obj){
+        Score score;
+        try {
+            int user_id = obj.getInt("user_id");
+            int wine_id = obj.getInt("wine_id");
+            double nScore = obj.getDouble("score");
+            String sTimestamp = obj.getString("timestamp");
+            score = new Score(user_id, wine_id, nScore, stringToDate(sTimestamp));
+            return score;
+        }catch(Exception e) {
+            System.out.println("Exception : " + e.getMessage());
+        }
+        return null;
+    }
+
+    public static java.util.Date stringToDate(String string) throws ParseException {
+        java.util.Date timestamp = timestampFormat.parse(string);
+        return timestamp;
+    }
+
+    public static String dateToString(java.util.Date date){
+        String timestmapString = timestampFormat.format(date);
+        return timestmapString;
     }
 }
