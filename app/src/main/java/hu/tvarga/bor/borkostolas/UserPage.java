@@ -200,10 +200,14 @@ public class UserPage extends Activity {
         winesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("clicked");
+                System.out.println("position: "+position);
+                System.out.println("win in position: "+wines.get(position).getWine_name());
+                TextView detailsWineNameTV = (TextView) findViewById(R.id.detailsWineName);
+                detailsWineNameTV.setText(wines.get(position).getWine_name());
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(UserPage.this, "clicked", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(UserPage.this, "clicked list item", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
