@@ -13,7 +13,6 @@ public class DBSyncController {
 
     public boolean updateLocalWineDatabase(Context context, List<Wine> wines){
         LocalDAO lDAO = new LocalDAO(context);
-        SQLiteDatabase db = lDAO.getDB();
 
         for (int i = 0; i < wines.size(); i++) {
             lDAO.addWine(wines.get(i));

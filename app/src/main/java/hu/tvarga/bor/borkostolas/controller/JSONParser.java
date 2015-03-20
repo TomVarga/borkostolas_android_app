@@ -16,7 +16,7 @@ public class JSONParser {
             String wine_composition = obj.getString("wine_composition");
             // these can be null so we check first
             int wine_year = -1, wine_price = -1;
-            if (!obj.isNull("Wine_year")) wine_year = obj.getInt("wine_year");
+            if (!obj.isNull("wine_year")) wine_year = obj.getInt("wine_year");
             if (!obj.isNull("wine_price")) wine_price = obj.getInt("wine_price");
             wine = new Wine(wine_id, wine_name, wine_winery, wine_location, wine_year, wine_composition, wine_price);
             return wine;

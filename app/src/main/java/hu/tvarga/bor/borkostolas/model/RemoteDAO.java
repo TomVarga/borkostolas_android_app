@@ -21,7 +21,7 @@ public class RemoteDAO implements DAO {
         System.out.println("DAO object created");
     }
 
-    List<Wine> wines = new ArrayList<Wine>();
+    ArrayList<Wine> wines = new ArrayList<Wine>();
 
     @Override
     public boolean addOrUpdateWineScore(Wine wine, int user_id, int score) {
@@ -29,7 +29,7 @@ public class RemoteDAO implements DAO {
     }
 
     @Override
-    public List<Wine> getWines() {
+    public ArrayList<Wine> getWines() {
         HttpPost httppost;
         HttpClient httpclient;
 

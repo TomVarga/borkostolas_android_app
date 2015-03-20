@@ -19,6 +19,21 @@
         android:text="asdf"
         android:id="@+id/contentTV"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent">
+        android:layout_height="140dp">
     </TextView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal">
+
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/winesList"
+            android:layout_gravity="center_vertical"
+            android:descendantFocusability="blocksDescendants"/>
+    </LinearLayout>
+
 </LinearLayout>
