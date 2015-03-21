@@ -209,6 +209,7 @@ public class UserPage extends Activity {
         winesList.setAdapter(adapter);
 
         EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+        // TODO: should add filter to limit decimal precision
         scoreET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             public void onFocusChange(View v, boolean hasFocus) {

@@ -197,7 +197,7 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
             Score localScore = new Score(
                     Integer.parseInt(cursor.getString(0)),
                     Integer.parseInt(cursor.getString(1)),
-                    Integer.parseInt(cursor.getString(2)),
+                    Double.parseDouble(cursor.getString(2)),
                     timestamp
             );
             // don't update if scores are equal or the remote score was before the local one
