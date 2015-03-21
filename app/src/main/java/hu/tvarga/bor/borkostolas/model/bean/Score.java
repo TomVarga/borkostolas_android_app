@@ -48,4 +48,14 @@ public class Score {
         this.score = score;
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "Score{" +
+                "user_id=" + user_id +
+                ", wine_id=" + wine_id +
+                ", score=" + score +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

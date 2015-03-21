@@ -30,20 +30,42 @@ public class DBSyncController {
         ArrayList<Score> localScores = lDAO.getScores(user_id);
 
         // update local DB
-        for ( int i = 0; i < remoteScores.size(); i++){
-            Score remoteScore = remoteScores.get(i);
-//            if (localScores.size() > 0){
-//                for ( int j = 0; j < localScores.size(); j++){
-//                    Score localScore = localScores.get(j);
-//                    if ( remoteScore.getUser_id() == localScore.getUser_id() && remoteScore.getWine_id() == localScore.getWine_id() && remoteScore.getScore() != localScore.getScore() && localScore.getTimestamp().after(remoteScore.getTimestamp())){
-//                        rDAO.addOrUpdateScore(localScore);
-//                        break;
-//                        // TODO come back to this once we can update local score
-//                    }
-//                }
-//            }
-            lDAO.addOrUpdateScore(remoteScore);
+        int maxWineIndex = 0;
+        if (remoteScores.size() > 0) {
+            for (int i = 0; i < remoteScores.size(); i++) {
+                Score remoteScore = remoteScores.get(i);
+//                System.out.println(remoteScore.toString());
+                if (maxWineIndex < remoteScore.getWine_id()) maxWineIndex = remoteScore.getWine_id();
+                lDAO.addOrUpdateScore(remoteScore);
+            }
         }
+
+//        ArrayList<String> arrayForWebService = new ArrayList<>();
+//        arrayForWebService.add(user_id + "");
+//        if (maxWineIndex > 0 && (localScores.size() > 0)) {
+//            for (int l = 0; l < maxWineIndex; l++) {
+//                for (int i = 0; i < localScores.size(); i++) {
+//                    Score localScore = localScores.get(i);
+//                    boolean bFound = false;
+//                    for (int j = 0; j < remoteScores.size(); j++) {
+//                        Score remoteScore = remoteScores.get(j);
+//                        if (remoteScore.getUser_id() == localScore.getUser_id() && remoteScore.getWine_id() == localScore.getWine_id() && remoteScore.getScore() != localScore.getScore() && localScore.getTimestamp().after(remoteScore.getTimestamp())) {
+//                            rDAO.addOrUpdateScore(localScore);
+//                            bFound = true;
+//                            break;
+//                            // TODO come back to this once we can update local score
+//                        }
+//                    }
+//                    if (!bFound && localScore.getScore() > 0) {
+//                        rDAO.addOrUpdateScore(localScore);
+//                    }
+//
+//                }
+//                arrayForWebService.add("");
+//            }
+//        }
+//
+
 
         return true;
     }

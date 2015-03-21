@@ -1,7 +1,9 @@
 package hu.tvarga.bor.borkostolas;
 
 import hu.tvarga.bor.borkostolas.controller.DBSyncController;
+import hu.tvarga.bor.borkostolas.controller.DecimalDigitsInputFilter;
 import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
+import hu.tvarga.bor.borkostolas.controller.OnAdapterNeedsNotify;
 import hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Score;
@@ -16,6 +18,7 @@ import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -58,6 +61,41 @@ public class UserPage extends Activity {
     ArrayList<Score> remoteScores;
     ArrayList<ScoredWine> localScoredWines;
     Context context;
+    OnAdapterNeedsNotify adapterNotifyListener;
+
+    public void updateLocalScoredWines(Context context, int user_id){
+        LocalDAO lDAO = new LocalDAO(context);
+        localWines = lDAO.getWines();
+        localScoredWines.clear();
+
+        if (localWines.size() > 0){
+            for (int i = 0; i < localWines.size(); i++){
+                Wine lWine = localWines.get(i);
+                double lScore =  lDAO.getScore(user_id, lWine.getWine_id());
+                double score = (lScore > 0) ? lScore : -1;
+
+                //wine_id, wine_name, wine_winery, wine_location, wine_year, wine_composition, wine_price
+                ScoredWine scoredWine = new ScoredWine(
+                        lWine.getWine_id(),
+                        lWine.getWine_name(),
+                        lWine.getWine_winery(),
+                        lWine.getWine_location(),
+                        lWine.getWine_year(),
+                        lWine.getWine_composition(),
+                        lWine.getWine_price(),
+                        score,
+                        user_id
+                );
+                localScoredWines.add(scoredWine);
+            }
+        }
+        System.out.println("localScoredWines updated");
+    }
+
+    public void setOnAdapterNeedsNotify(OnAdapterNeedsNotify eventListener) {
+        adapterNotifyListener=eventListener;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +113,6 @@ public class UserPage extends Activity {
         Button btnUpdateWines = (Button) findViewById(R.id.btnGetWinesFromRemoteDB);
 
         btnUpdateWines.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View v) {
                 new Thread(new Runnable() {
@@ -121,33 +158,8 @@ public class UserPage extends Activity {
             }
         });
 
-
-        LocalDAO lDAO = new LocalDAO(context);
-        localWines = lDAO.getWines();
         localScoredWines = new ArrayList<>();
-
-        if (localWines.size() > 0){
-            for (int i = 0; i < localWines.size(); i++){
-                Wine lWine = localWines.get(i);
-                double lScore =  lDAO.getScore(user_id, lWine.getWine_id());
-                double score = (lScore > 0) ? lScore : -1;
-
-                //wine_id, wine_name, wine_winery, wine_location, wine_year, wine_composition, wine_price
-                ScoredWine scoredWine = new ScoredWine(
-                        lWine.getWine_id(),
-                        lWine.getWine_name(),
-                        lWine.getWine_winery(),
-                        lWine.getWine_location(),
-                        lWine.getWine_year(),
-                        lWine.getWine_composition(),
-                        lWine.getWine_price(),
-                        score,
-                        user_id
-                );
-//                System.out.println(scoredWine.toString());
-                localScoredWines.add(scoredWine);
-            }
-        }
+        updateLocalScoredWines(context, user_id);
 
 
 //        System.out.println("wine size: " + localWines.size());
@@ -180,7 +192,7 @@ public class UserPage extends Activity {
 //        ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {"a", "b", "c"});
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, winesArray);
-        WinesAdapter adapter = new WinesAdapter(this, localScoredWines);
+        final WinesAdapter adapter = new WinesAdapter(this, localScoredWines);
         ListView winesList = (ListView) findViewById(R.id.winesList);
         winesList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
@@ -209,19 +221,21 @@ public class UserPage extends Activity {
         winesList.setAdapter(adapter);
 
         EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
-        // TODO: should add filter to limit decimal precision
+//        scoreET.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3, 3)});
+        // TODO: fix input filter
         scoreET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             public void onFocusChange(View v, boolean hasFocus) {
                 EditText et = (EditText) v;
                 if(!hasFocus) {
                     ScoredWine wine = (ScoredWine) v.getTag();
-                    double nScore = Double.parseDouble(et.getText().toString());
+                    String ETText = et.getText().toString();
+                    double nScore = (ETText.equals("")) ? -1 : Double.parseDouble(ETText);
                     wine.setWine_score(nScore);
                     Score score = new Score(wine.getUser_id(), wine.getWine_id(), nScore, new Date());
                     LocalDAO lDAO = new LocalDAO(context);
                     lDAO.addOrUpdateScore(score);
-                    // TODO: should probably update listview here but need adapter reference
+                    adapter.notifyDataSetChanged();
                     System.out.println("focus lost on ET" + wine.toString());
                 }
             }
@@ -238,10 +252,12 @@ public class UserPage extends Activity {
                                 remoteScores = dao.getScores(user_id);
                                 if (remoteScores.size() > 0) {
                                     final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user_id);
-
+                                    updateLocalScoredWines(context, user_id);
+                                    adapterNotifyListener.onEvent();
                                     runOnUiThread(new Runnable() {
                                         public void run() {
                                             Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_scoreSyncSuccess : R.string.action_scoreSyncFail, Toast.LENGTH_SHORT).show();
+
                                         }
                                     });
                                 }
@@ -261,6 +277,17 @@ public class UserPage extends Activity {
         });
 
 
+        setOnAdapterNeedsNotify(new OnAdapterNeedsNotify() {
+            @Override
+            public void onEvent() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        System.out.println("onEvent : OnAdapterNeedsNotify");
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
 
 //                    httpclient=new DefaultHttpClient();
 //                    httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
@@ -274,13 +301,6 @@ public class UserPage extends Activity {
 //                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
 //                    final String response = httpclient.execute(httppost, responseHandler);
 //                    System.out.println("Response : " + response);
-
-
-
-
-
-
-
 
 
 //        content.setText("poop");

@@ -85,7 +85,32 @@ public class RemoteDAO implements DAO {
 
     @Override
     public boolean addOrUpdateScore(Score score) {
-        return false;
+//        HttpPost httppost;
+//        HttpClient httpclient;
+//        List<NameValuePair> nameValuePairs;
+//
+//        try{
+//            httpclient=new DefaultHttpClient();
+//            httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
+//            nameValuePairs = new ArrayList<>(2);
+//            nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));
+//            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//            httpclient.execute(httppost);
+//            ResponseHandler<String> responseHandler = new BasicResponseHandler();
+//            String result = httpclient.execute(httppost, responseHandler);
+//            JSONArray jsonArray = new JSONArray(result);
+//            for (int i=0; i < jsonArray.length(); i++ ){
+//                JSONObject obj = (JSONObject) jsonArray.get(i);
+//                Score score = JSONParser.getScoreFromJSONObj(obj);
+//                scores.add(score);
+//            }
+//            System.out.println("Response : " + result);
+//        }catch(Exception e){
+//            System.out.println("Exception : " + e.getMessage());
+//        }
+
+
+        return true;
     }
 
 

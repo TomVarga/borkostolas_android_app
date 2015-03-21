@@ -196,7 +196,9 @@
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:ems="10"
-                    android:id="@+id/detailsScoreET" />
+                    android:id="@+id/detailsScoreET"
+                    android:maxLength="6"
+                    android:numeric="decimal" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
