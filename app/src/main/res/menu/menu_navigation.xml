@@ -8,13 +8,13 @@
     <item android:id="@+id/action_results"
           android:title="@string/action_results"
           android:orderInCategory="100"
-          android:icon="@drawable/ic_action_paste"
+          android:icon="@drawable/ic_action_results"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/action_ertekel"
           android:title="@string/action_ertekel"
           android:orderInCategory="200"
-          android:icon="@drawable/ic_action_edit"
+          android:icon="@drawable/ic_action_scores"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/action_logout"
