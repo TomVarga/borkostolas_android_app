@@ -190,6 +190,7 @@
                     android:inputType="numberDecimal"
                     android:ems="10"
                     android:id="@+id/detailsScoreET"
+                    android:imeOptions="actionDone"
                     android:maxLength="6"
                     android:numeric="decimal" />
             </LinearLayout>
@@ -212,7 +213,7 @@
                 <Button
                     android:layout_width="fill_parent"
                     android:layout_height="32dp"
-                    android:text="Értékelések elküldése"
+                    android:text="@string/button_syncScores"
                     android:id="@+id/buttonSubmitScore"
                     android:textSize="10sp" />
             </LinearLayout>

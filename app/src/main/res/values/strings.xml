@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Borkóstolás</string>
 
-    <string name="hello_world">Szia világ!</string>
     <string name="action_settings">Beállítások</string>
     <string name="action_ertekel">Értékel</string>
-    <string name="action_logout">Kijelentkezés</string>
     <string name="action_login">Bejelentkezés</string>
+    <string name="action_logout">Kijelentkezés</string>
     <string name="action_successfulLogin">Sikeres bejelentkezés</string>
     <string name="action_userValidation">Felhasználó hitelesítése...</string>
     <string name="action_wineDBUpdateSucces">Bor adatbázis frissítve!</string>
@@ -13,15 +12,16 @@
     <string name="action_getWineDB">Bor adatbázis frissítése...</string>
     <string name="action_syncScores">Értékelések szinkronizálása...</string>
     <string name="action_OK">OK</string>
+    <string name="action_scoreSyncSuccess">Értékelések szinkronizálva!</string>
+    <string name="action_scoreSyncFail">Értékelés szinkronizációs hiba!</string>
 
     <string name="error_loginError">Bejelentkezési hiba</string>
     <string name="error_userNotFound">Nem található a felhasználó</string>
     <string name="error_noNetworkAccess">Az internet nem elérhető!</string>
     <string name="error_error">Hiba!</string>
 
-
     <string name="button_getWinesfromRemoteDB">Elérhető bor adatbázis frissítése</string>
-    <string name="action_scoreSyncSuccess">Értékelések szinkronizálva!</string>
-    <string name="action_scoreSyncFail">Értékelés szinkronizációs hiba!</string>
+    <string name="button_syncScores">Értékelések szinkronizálása</string>
+
 
 </resources>

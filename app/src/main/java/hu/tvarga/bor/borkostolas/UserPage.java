@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -182,6 +185,20 @@ public class UserPage extends Activity {
                     adapter.notifyDataSetChanged();
                     System.out.println("focus lost on ET" + wine.toString());
                 }
+            }
+        });
+        scoreET.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_DONE){
+                    //Clear focus here from edittext
+                    v.setCursorVisible(false);
+                    v.clearFocus();
+                    InputMethodManager inputManager = (InputMethodManager)
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.toggleSoftInput(0, 0);
+                }
+                return false;
             }
         });
         Button btnSyncScore = (Button) findViewById(R.id.buttonSubmitScore);
