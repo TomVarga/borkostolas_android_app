@@ -98,11 +98,13 @@ public class UserPage extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userpage);
+        findViewById(R.id.detailsContainer).requestFocus();
 
         Bundle extras = getIntent().getExtras();
         final int user_id = extras.getInt("user_id");
         final User user = new User(user_id, extras.getString("user_name"), extras.getString("user_password"));
         final TextView content = (TextView) findViewById(R.id.contentTV);
+
 
         context = getBaseContext();
 
@@ -182,20 +184,19 @@ public class UserPage extends Activity {
                 EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
 
                 Double score = wine.getWine_score();
-                String sScore;
-                if (score > 0) {
-                    sScore = score.toString().replaceAll("[.]*[0]+$", ""); // cut trailing zeros
-                }else{
-                    sScore = "";
-                }
-                scoreET.setText(sScore);
+                scoreET.setText(getFormattedScore(score));
 
                 scoreET.setTag(wine);
+                scoreET.setFocusable(true);
+                scoreET.setFocusableInTouchMode(true);
             }
         });
         winesList.setAdapter(adapter);
 
         EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+        // so we can't even enter edit mode without the details frame displaiyng some data
+        scoreET.setFocusable(false);
+        scoreET.setFocusableInTouchMode(false);
 //        scoreET.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3, 3)});
         // TODO: fix input filter
         scoreET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -205,7 +206,7 @@ public class UserPage extends Activity {
                 if(!hasFocus) {
                     ScoredWine wine = (ScoredWine) v.getTag();
                     String ETText = et.getText().toString();
-                    double nScore = (ETText.equals("")) ? -1 : Double.parseDouble(ETText);
+                    Double nScore = (ETText.equals("")) ? -1 : Double.parseDouble(ETText);
                     wine.setWine_score(nScore);
                     Score score = new Score(wine.getUser_id(), wine.getWine_id(), nScore, new Date());
                     LocalDAO lDAO = new LocalDAO(context);
@@ -229,10 +230,24 @@ public class UserPage extends Activity {
                                     final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user);
                                     updateLocalScoredWines(context, user_id);
                                     adapterNotifyListener.onEvent();
+
+                                    // update the details view if we have to
+                                    final EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+                                    if (scoreET.isFocusable()){
+                                        LocalDAO lDAO = new LocalDAO(context);
+                                        ScoredWine wine = (ScoredWine) scoreET.getTag();
+                                        final Double score = lDAO.getScore(wine.getUser_id(), wine.getWine_id());
+
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                            scoreET.setText(getFormattedScore(score));
+                                            }
+                                        });
+                                    }
+
                                     runOnUiThread(new Runnable() {
                                         public void run() {
                                             Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_scoreSyncSuccess : R.string.action_scoreSyncFail, Toast.LENGTH_SHORT).show();
-
                                         }
                                     });
                                 }
@@ -266,6 +281,16 @@ public class UserPage extends Activity {
 
     }
 
+    public static String getFormattedScore(Double score){
+        String sScore;
+        if (score > 0) {
+            sScore = score.toString().replaceAll("[.]*[0]+$", ""); // cut trailing zeros
+        }else{
+            sScore = "";
+        }
+        return sScore;
+    }
+
 
     public class WinesAdapter extends ArrayAdapter<ScoredWine> {
 
@@ -286,13 +311,7 @@ public class UserPage extends Activity {
 
             tvName.setText(wine.getWine_name());
             Double score = wine.getWine_score();
-            String sScore;
-            if (score > 0) {
-                sScore = score.toString().replaceAll("[.]*[0]+$", ""); // cut trailing zeros
-            }else{
-                sScore = "";
-            }
-            tvScore.setText(sScore);
+            tvScore.setText(getFormattedScore(score));
 
             return convertView;
         }
