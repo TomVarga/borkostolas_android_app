@@ -1,6 +1,7 @@
 package hu.tvarga.bor.borkostolas;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,6 +28,8 @@ import hu.tvarga.bor.borkostolas.model.bean.ScoredWine;
 import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
+import static hu.tvarga.bor.borkostolas.R.string.*;
+
 public class UserPage extends Activity {
     ArrayList<Wine> localWines;
     ArrayList<Wine> remoteWines;
@@ -34,6 +37,7 @@ public class UserPage extends Activity {
     ArrayList<ScoredWine> localScoredWines;
     Context context;
     OnAdapterNeedsNotify adapterNotifyListener;
+    ProgressDialog dialog = null;
 
     public void updateLocalScoredWines(Context context, int user_id){
         LocalDAO lDAO = new LocalDAO(context);
@@ -90,42 +94,32 @@ public class UserPage extends Activity {
         btnUpdateWines.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                dialog = ProgressDialog.show(UserPage.this, "", getResources().getString(R.string.action_getWineDB), true);
                 new Thread(new Runnable() {
                     public void run() {
                         try{
                             if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
                                 RemoteDAO dao = new RemoteDAO();
                                 remoteWines = dao.getWines();
-
                                 if (remoteWines.size() > 0){
                                     final boolean updateSucceeded = dbSyncController.updateLocalWineDatabase(context, remoteWines);
-
                                     runOnUiThread(new Runnable() {
                                         public void run() {
-                                            Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_wineDBUpdateSucces : R.string.action_wineDBUpdateFail, Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            String s = "";
-                                            for (int i = 0; i < remoteWines.size(); i++) {
-                                                s = s + remoteWines.get(i).toString() + "\n";
-                                            }
-
-//                                            content.setText("Response from PHP : " + s);
+                                            dialog.dismiss();
+                                            Toast.makeText(UserPage.this, updateSucceeded ? action_wineDBUpdateSucces : action_wineDBUpdateFail, Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
                             }else{
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(UserPage.this, R.string.error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                        Toast.makeText(UserPage.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
                         }catch(Exception e){
+                            dialog.dismiss();
                             System.out.println("Exception : " + e.getMessage());
                         }
                     }
@@ -194,6 +188,7 @@ public class UserPage extends Activity {
         btnSyncScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog = ProgressDialog.show(UserPage.this, "", getResources().getString(R.string.action_syncScores), true);
                 new Thread(new Runnable() {
                     public void run() {
                         try{
@@ -221,18 +216,21 @@ public class UserPage extends Activity {
 
                                     runOnUiThread(new Runnable() {
                                         public void run() {
-                                            Toast.makeText(UserPage.this, updateSucceeded ? R.string.action_scoreSyncSuccess : R.string.action_scoreSyncFail, Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                            Toast.makeText(UserPage.this, updateSucceeded ? action_scoreSyncSuccess : action_scoreSyncFail, Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
                             }else{
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(UserPage.this, R.string.error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                        Toast.makeText(UserPage.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
                         }catch(Exception e){
+                            dialog.dismiss();
                             System.out.println("Exception : " + e.getMessage());
                         }
                     }

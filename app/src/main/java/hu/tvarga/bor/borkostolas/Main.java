@@ -50,7 +50,7 @@ public class Main extends Activity {
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = ProgressDialog.show(Main.this, "", "Felhasználó hitelesítése...", true);
+                dialog = ProgressDialog.show(Main.this, "", getResources().getString(R.string.action_userValidation), true);
                 new Thread(new Runnable() {
                     public void run() {
                         login();
@@ -115,9 +115,9 @@ public class Main extends Activity {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
                 builder.setTitle(R.string.error_loginError);
-                builder.setMessage("Hiba!")
+                builder.setMessage(R.string.error_error)
                         .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.action_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                             }
                         });
