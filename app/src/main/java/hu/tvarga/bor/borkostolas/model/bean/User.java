@@ -1,5 +1,8 @@
 package hu.tvarga.bor.borkostolas.model.bean;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 public class User {
     private int user_id;
     private String user_name;
@@ -39,29 +42,27 @@ public class User {
         this.isLoggedIn = isLoggedIn;
     }
 
-    public int getPermission() {
-        return permission;
-    }
-
-    public void setPermission(int permission) {
-        this.permission = permission;
-    }
-
-    public User(int user_id, String user_name, String user_password, boolean isLoggedIn, int permission) {
-        this.user_id = user_id;
-        this.user_name = user_name;
-        this.user_password = user_password;
-        this.isLoggedIn = isLoggedIn;
-        this.permission = permission;
-    }
-
-    public User(int user_id, String user_name, String user_password) {
-        this.user_password = user_password;
-        this.user_name = user_name;
-        this.user_id = user_id;
-    }
-
     public User(){}
+
+    public void setPrefs(Context context){
+        SharedPreferences pref = context.getSharedPreferences("borkostolasPref", 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("user_id", this.user_id);
+        editor.putString("user_name", this.user_name);
+        editor.putString("user_password", this.user_password);
+        editor.putBoolean("isLoggedIn", this.isLoggedIn);
+        editor.putInt("permission", this.permission);
+        editor.commit();
+    }
+
+    public void populateFromPrefs(Context context){
+        SharedPreferences pref = context.getSharedPreferences("borkostolasPref", 0);
+        this.user_id = pref.getInt("user_id", -1);
+        this.user_name = pref.getString("user_name", "");
+        this.user_password = pref.getString("user_password", "");
+        this.isLoggedIn = pref.getBoolean("isLoggedIn", false);
+        this.permission = pref.getInt("permission", 0);
+    }
 
     @Override
     public String toString() {

@@ -1,11 +1,15 @@
 package hu.tvarga.bor.borkostolas;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -33,7 +37,7 @@ import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import static hu.tvarga.bor.borkostolas.R.string.*;
 
-public class UserPage extends Activity {
+public class UserPage extends ActionBarActivity {
     ArrayList<Wine> localWines;
     ArrayList<Wine> remoteWines;
     ArrayList<Score> remoteScores;
@@ -41,6 +45,7 @@ public class UserPage extends Activity {
     Context context;
     OnAdapterNeedsNotify adapterNotifyListener;
     ProgressDialog dialog = null;
+    User user;
 
     public void updateLocalScoredWines(Context context, int user_id){
         LocalDAO lDAO = new LocalDAO(context);
@@ -75,6 +80,39 @@ public class UserPage extends Activity {
         adapterNotifyListener=eventListener;
     }
 
+    public boolean onCreateOptionsMenu(Menu menu){
+        if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_navigation, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent intent;
+        if (item.getItemId() == R.id.action_ertekel) {
+            intent = new Intent(getApplicationContext(), UserPage.class);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.action_login) {
+            intent = new Intent(getApplicationContext(), Main.class);
+            user.setLoggedIn(false);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.action_logout) {
+            intent = new Intent(getApplicationContext(), Main.class);
+            user.setLoggedIn(false);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.action_results){
+            intent = new Intent(getApplicationContext(), Results.class);
+            startActivity(intent);
+        }
+        invalidateOptionsMenu(); // forces update
+        return true;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,13 +120,15 @@ public class UserPage extends Activity {
         setContentView(R.layout.activity_userpage);
         findViewById(R.id.detailsContainer).requestFocus();
 
-        Bundle extras = getIntent().getExtras();
-        final int user_id = extras.getInt("user_id");
-        final User user = new User(user_id, extras.getString("user_name"), extras.getString("user_password"));
-//        final TextView content = (TextView) findViewById(R.id.contentTV);
-
-
         context = getBaseContext();
+//        Bundle extras = getIntent().getExtras();
+        user = new User();
+        user.populateFromPrefs(context);
+        final int user_id = user.getUser_id();
+//        final int user_id = extras.getInt("user_id");
+
+//        final User user = new User(user_id, extras.getString("user_name"), extras.getString("user_password"));
+
 
         final DBSyncController dbSyncController = new DBSyncController();
 
@@ -195,9 +235,11 @@ public class UserPage extends Activity {
                     v.setCursorVisible(false);
                     v.clearFocus();
                     InputMethodManager inputManager = (InputMethodManager)
-                    context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            context.getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputManager.toggleSoftInput(0, 0);
                 }
+//                System.out.println("key pressed: " + event.getAction() + " enter " + KeyEvent.KEYCODE_ENTER);
+
                 return false;
             }
         });
@@ -226,7 +268,7 @@ public class UserPage extends Activity {
 
                                         runOnUiThread(new Runnable() {
                                             public void run() {
-                                            scoreET.setText(getFormattedScore(score));
+                                                scoreET.setText(getFormattedScore(score));
                                             }
                                         });
                                     }
@@ -306,4 +348,11 @@ public class UserPage extends Activity {
         }
 
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        user.setPrefs(context);
+    }
+
 }

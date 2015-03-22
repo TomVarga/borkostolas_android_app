@@ -2,7 +2,7 @@
     <string name="app_name">Borkóstolás</string>
 
     <string name="action_settings">Beállítások</string>
-    <string name="action_ertekel">Értékel</string>
+    <string name="action_ertekel">Értékelések</string>
     <string name="action_login">Bejelentkezés</string>
     <string name="action_logout">Kijelentkezés</string>
     <string name="action_successfulLogin">Sikeres bejelentkezés</string>
@@ -14,6 +14,7 @@
     <string name="action_OK">OK</string>
     <string name="action_scoreSyncSuccess">Értékelések szinkronizálva!</string>
     <string name="action_scoreSyncFail">Értékelés szinkronizációs hiba!</string>
+    <string name="action_results">Eredmények</string>
 
     <string name="error_loginError">Bejelentkezési hiba</string>
     <string name="error_userNotFound">Nem található a felhasználó</string>

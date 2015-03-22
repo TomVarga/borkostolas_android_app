@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ import hu.tvarga.bor.borkostolas.model.bean.User;
 
 public class Main extends Activity {
 
+    User user;
+    Context context;
     Button b;
     EditText et,pass;
     TextView tv;
@@ -41,6 +44,8 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        context = getBaseContext();
 
         b = (Button)findViewById(R.id.Button01);
         et = (EditText)findViewById(R.id.username);
@@ -62,7 +67,7 @@ public class Main extends Activity {
 
     void login(){
         try{
-            User user = new User();
+            user = new User();
             user.setUser_name(et.getText().toString().trim());
             user.setUser_password(pass.getText().toString().trim());
             httpclient=new DefaultHttpClient();
@@ -98,10 +103,10 @@ public class Main extends Activity {
                 int user_id = obj.getInt("user_id");
                 user.setUser_id(user_id);
                 user.setLoggedIn(true);
+
+                user.setPrefs(context);
+
                 Intent intent = new Intent(Main.this, UserPage.class);
-                intent.putExtra("user_id", user.getUser_id());
-                intent.putExtra("user_name",user.getUser_name());
-                intent.putExtra("user_password", user.getUser_password());
                 startActivity(intent);
             }
 
@@ -127,4 +132,9 @@ public class Main extends Activity {
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        user.setPrefs(context);
+    }
 }
