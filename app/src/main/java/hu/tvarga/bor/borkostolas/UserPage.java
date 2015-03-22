@@ -52,10 +52,6 @@ import java.util.Date;
 import java.util.List;
 
 public class UserPage extends Activity {
-    HttpPost httppost;
-    HttpResponse response;
-    HttpClient httpclient;
-    List<NameValuePair> nameValuePairs;
     ArrayList<Wine> localWines;
     ArrayList<Score> localScores;
     ArrayList<Wine> remoteWines;
@@ -163,37 +159,6 @@ public class UserPage extends Activity {
         localScoredWines = new ArrayList<>();
         updateLocalScoredWines(context, user_id);
 
-
-//        System.out.println("wine size: " + localWines.size());
-//        if (localWines.size() > 0) {
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    String s = "";
-//                    for (int i = 0; i < localWines.size(); i++) {
-//                        s = s + localWines.get(i).toString() + "\n";
-//                    }
-//
-//                    content.setText("Local wines : " + s);
-//                }
-//            });
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-////                    createTableRows(wines);
-//                }
-//            });
-//        }
-
-//        String[] winesArray = new String[wines.size()];
-//        for (int i=0; i < wines.size(); i++){
-//            winesArray[i] = wines.get(i).getWine_name();
-//        }
-
-
-//        ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {"a", "b", "c"});
-
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, winesArray);
         final WinesAdapter adapter = new WinesAdapter(this, localScoredWines);
         ListView winesList = (ListView) findViewById(R.id.winesList);
         winesList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -215,8 +180,16 @@ public class UserPage extends Activity {
                 TextView detailsPriceTV = (TextView) findViewById(R.id.detailsPriceTV);
                 detailsPriceTV.setText(wine.getWine_price() + "");
                 EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
-                double score = wine.getWine_score();
-                scoreET.setText((score > 0) ? (score + "") : "");
+
+                Double score = wine.getWine_score();
+                String sScore;
+                if (score > 0) {
+                    sScore = score.toString().replaceAll("[.]*[0]+$", ""); // cut trailing zeros
+                }else{
+                    sScore = "";
+                }
+                scoreET.setText(sScore);
+
                 scoreET.setTag(wine);
             }
         });
@@ -291,21 +264,6 @@ public class UserPage extends Activity {
             }
         });
 
-//                    httpclient=new DefaultHttpClient();
-//                    httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
-//                    //add your data
-//                    nameValuePairs = new ArrayList<>(2);
-//                    // Always use the same variable name for posting i.e the android side variable name and php side variable name should be similar,
-//                    nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));  // $Edittext_value = $_POST['Edittext_value'];
-//                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//                    //Execute HTTP Post Request
-//                    response=httpclient.execute(httppost);
-//                    ResponseHandler<String> responseHandler = new BasicResponseHandler();
-//                    final String response = httpclient.execute(httppost, responseHandler);
-//                    System.out.println("Response : " + response);
-
-
-//        content.setText("poop");
     }
 
 
@@ -327,8 +285,14 @@ public class UserPage extends Activity {
             TextView tvScore = (TextView) convertView.findViewById(R.id.wineRowScore);
 
             tvName.setText(wine.getWine_name());
-            double score = wine.getWine_score();
-            tvScore.setText((score > 0) ? (score + "") : "");
+            Double score = wine.getWine_score();
+            String sScore;
+            if (score > 0) {
+                sScore = score.toString().replaceAll("[.]*[0]+$", ""); // cut trailing zeros
+            }else{
+                sScore = "";
+            }
+            tvScore.setText(sScore);
 
             return convertView;
         }

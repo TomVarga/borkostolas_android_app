@@ -202,12 +202,6 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
             );
             // don't update if scores are equal or the remote score was before the local one
             if (localScore.getScore() == remoteScore.getScore() || remoteScore.getTimestamp().before(localScore.getTimestamp())){
-                // DEBUG:
-//                if (remoteScore.getWine_id() == 2){
-//                    System.out.println("LDAO 2 add");
-//                    System.out.println(remoteScore.toString());
-//                    System.out.println(localScore.toString());
-//                }
 
                 db.close();
                 return false;

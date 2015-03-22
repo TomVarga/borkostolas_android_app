@@ -84,29 +84,6 @@ public class RemoteDAO implements DAO {
 
     @Override
     public boolean addOrUpdateScore(Score score) {
-        HttpPost httppost;
-//        HttpClient httpclient;
-//        List<NameValuePair> nameValuePairs;
-//
-//        try{
-//            httpclient=new DefaultHttpClient();
-//            httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
-//            nameValuePairs = new ArrayList<>(2);
-//            nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));
-//            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-//            httpclient.execute(httppost);
-//            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-//            String result = httpclient.execute(httppost, responseHandler);
-//            JSONArray jsonArray = new JSONArray(result);
-//            for (int i=0; i < jsonArray.length(); i++ ){
-//                JSONObject obj = (JSONObject) jsonArray.get(i);
-//                Score score = JSONParser.getScoreFromJSONObj(obj);
-//                scores.add(score);
-//            }
-//            System.out.println("Response : " + result);
-//        }catch(Exception e){
-//            System.out.println("Exception : " + e.getMessage());
-//        }
         return true;
     }
 
@@ -116,23 +93,19 @@ public class RemoteDAO implements DAO {
         List<NameValuePair> nameValuePairs;
 
         try{
-
             httpclient=new DefaultHttpClient();
             httppost= new HttpPost("http://bor.tvarga.hu/addWineScoresToDB.php"); // make sure the url is correct.
             nameValuePairs = new ArrayList<>(2);
             nameValuePairs.add(new BasicNameValuePair("login","true"));
             nameValuePairs.add(new BasicNameValuePair("user_name", user.getUser_name()));
             nameValuePairs.add(new BasicNameValuePair("user_password",user.getUser_password()));
-            System.out.println(user.toString());
             nameValuePairs.add(new BasicNameValuePair("user_rememberme", null));
             nameValuePairs.add(new BasicNameValuePair("q", jsArray.toString()));
-//            System.out.println(nameValuePairs);
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             String result = httpclient.execute(httppost, responseHandler);
 
             System.out.println("Response : " + result);
-//            EntityUtils.consumeQuietly(responseHandler.getEntity());
         }catch(Exception e){
             System.out.println("Exception : " + e.getMessage());
         }
