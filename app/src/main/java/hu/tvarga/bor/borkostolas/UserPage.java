@@ -1,7 +1,23 @@
 package hu.tvarga.bor.borkostolas;
 
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Date;
+
 import hu.tvarga.bor.borkostolas.controller.DBSyncController;
-import hu.tvarga.bor.borkostolas.controller.DecimalDigitsInputFilter;
 import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.controller.OnAdapterNeedsNotify;
 import hu.tvarga.bor.borkostolas.model.LocalDAO;
@@ -11,49 +27,8 @@ import hu.tvarga.bor.borkostolas.model.bean.ScoredWine;
 import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
-
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public class UserPage extends Activity {
     ArrayList<Wine> localWines;
-    ArrayList<Score> localScores;
     ArrayList<Wine> remoteWines;
     ArrayList<Score> remoteScores;
     ArrayList<ScoredWine> localScoredWines;
@@ -103,7 +78,7 @@ public class UserPage extends Activity {
         Bundle extras = getIntent().getExtras();
         final int user_id = extras.getInt("user_id");
         final User user = new User(user_id, extras.getString("user_name"), extras.getString("user_password"));
-        final TextView content = (TextView) findViewById(R.id.contentTV);
+//        final TextView content = (TextView) findViewById(R.id.contentTV);
 
 
         context = getBaseContext();
@@ -139,7 +114,7 @@ public class UserPage extends Activity {
                                                 s = s + remoteWines.get(i).toString() + "\n";
                                             }
 
-                                            content.setText("Response from PHP : " + s);
+//                                            content.setText("Response from PHP : " + s);
                                         }
                                     });
                                 }
@@ -194,11 +169,10 @@ public class UserPage extends Activity {
         winesList.setAdapter(adapter);
 
         EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
-        // so we can't even enter edit mode without the details frame displaiyng some data
+        // so we can't even enter edit mode without the details frame displaying some data
         scoreET.setFocusable(false);
         scoreET.setFocusableInTouchMode(false);
 //        scoreET.setFilters(new InputFilter[]{new DecimalDigitsInputFilter(3, 3)});
-        // TODO: fix input filter
         scoreET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             public void onFocusChange(View v, boolean hasFocus) {

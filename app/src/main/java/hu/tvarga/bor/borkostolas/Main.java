@@ -2,7 +2,6 @@ package hu.tvarga.bor.borkostolas;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -34,7 +33,6 @@ public class Main extends Activity {
     EditText et,pass;
     TextView tv;
     HttpPost httppost;
-    HttpResponse response;
     HttpClient httpclient;
     List<NameValuePair> nameValuePairs;
     ProgressDialog dialog = null;
@@ -117,7 +115,7 @@ public class Main extends Activity {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
                 builder.setTitle(R.string.error_loginError);
-                builder.setMessage(R.string.error_userNotFound)
+                builder.setMessage("Hiba!")
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
