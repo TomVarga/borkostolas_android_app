@@ -5,6 +5,9 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import hu.tvarga.bor.borkostolas.model.bean.Score;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
@@ -37,13 +40,16 @@ public class JSONParser {
         try {
             int user_id = obj.getInt("user_id");
             int wine_id = obj.getInt("wine_id");
-            double nScore = obj.getDouble("score");
+            double nScore = (!obj.isNull("score")) ? obj.getDouble("score") : -1;
             String sTimestamp = obj.getString("timestamp");
             java.util.Date timestamp = stringToDate(sTimestamp);
             Calendar cal = Calendar.getInstance();
             cal.setTime(timestamp);
-            // TODO: this is because remote MYSQL is running GMT
-            cal.add(Calendar.HOUR_OF_DAY, 1);
+            Calendar mCalendar = new GregorianCalendar();
+            TimeZone mTimeZone = mCalendar.getTimeZone();
+            int mGMTOffset = mTimeZone.getRawOffset();
+            // HACK: this is because remote MYSQL is running GMT
+            cal.add(Calendar.HOUR_OF_DAY, (int) TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS));
             java.util.Date adjustedTimestamp = cal.getTime();
             score = new Score(user_id, wine_id, nScore, adjustedTimestamp);
             return score;

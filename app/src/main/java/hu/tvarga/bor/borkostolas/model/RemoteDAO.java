@@ -17,6 +17,7 @@ import java.util.List;
 
 import hu.tvarga.bor.borkostolas.controller.JSONParser;
 import hu.tvarga.bor.borkostolas.model.bean.Score;
+import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 public class RemoteDAO implements DAO {
@@ -37,7 +38,6 @@ public class RemoteDAO implements DAO {
         try{
             httpclient=new DefaultHttpClient();
             httppost= new HttpPost("http://bor.tvarga.hu/getWineData.php"); // make sure the url is correct.
-            httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             String result = httpclient.execute(httppost, responseHandler);
             JSONArray jsonArray = new JSONArray(result);
@@ -66,7 +66,6 @@ public class RemoteDAO implements DAO {
             nameValuePairs = new ArrayList<>(2);
             nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             String result = httpclient.execute(httppost, responseHandler);
             JSONArray jsonArray = new JSONArray(result);
@@ -85,7 +84,7 @@ public class RemoteDAO implements DAO {
 
     @Override
     public boolean addOrUpdateScore(Score score) {
-//        HttpPost httppost;
+        HttpPost httppost;
 //        HttpClient httpclient;
 //        List<NameValuePair> nameValuePairs;
 //
@@ -108,7 +107,35 @@ public class RemoteDAO implements DAO {
 //        }catch(Exception e){
 //            System.out.println("Exception : " + e.getMessage());
 //        }
+        return true;
+    }
 
+    public boolean addOrUpdateScore(JSONArray jsArray, User user) {
+        HttpPost httppost;
+        HttpClient httpclient;
+        List<NameValuePair> nameValuePairs;
+
+        try{
+
+            httpclient=new DefaultHttpClient();
+            httppost= new HttpPost("http://bor.tvarga.hu/addWineScoresToDB.php"); // make sure the url is correct.
+            nameValuePairs = new ArrayList<>(2);
+            nameValuePairs.add(new BasicNameValuePair("login","true"));
+            nameValuePairs.add(new BasicNameValuePair("user_name", user.getUser_name()));
+            nameValuePairs.add(new BasicNameValuePair("user_password",user.getUser_password()));
+            System.out.println(user.toString());
+            nameValuePairs.add(new BasicNameValuePair("user_rememberme", null));
+            nameValuePairs.add(new BasicNameValuePair("q", jsArray.toString()));
+//            System.out.println(nameValuePairs);
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            ResponseHandler<String> responseHandler = new BasicResponseHandler();
+            String result = httpclient.execute(httppost, responseHandler);
+
+            System.out.println("Response : " + result);
+//            EntityUtils.consumeQuietly(responseHandler.getEntity());
+        }catch(Exception e){
+            System.out.println("Exception : " + e.getMessage());
+        }
 
         return true;
     }

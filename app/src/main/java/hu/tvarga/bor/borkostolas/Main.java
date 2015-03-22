@@ -26,6 +26,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import hu.tvarga.bor.borkostolas.model.bean.User;
+
 public class Main extends Activity {
 
     Button b;
@@ -62,25 +64,25 @@ public class Main extends Activity {
 
     void login(){
         try{
-
+            User user = new User();
+            user.setUser_name(et.getText().toString().trim());
+            user.setUser_password(pass.getText().toString().trim());
             httpclient=new DefaultHttpClient();
             httppost= new HttpPost("http://bor.tvarga.hu/login3/androidLogin.php"); // make sure the url is correct.
-            //add your data
             nameValuePairs = new ArrayList<>(2);
             // Always use the same variable name for posting i.e the android side variable name and php side variable name should be similar,
             nameValuePairs.add(new BasicNameValuePair("login","true"));
-            nameValuePairs.add(new BasicNameValuePair("user_name",et.getText().toString().trim()));  // $Edittext_value = $_POST['Edittext_value'];
-            nameValuePairs.add(new BasicNameValuePair("user_password",pass.getText().toString().trim()));
+            nameValuePairs.add(new BasicNameValuePair("user_name",user.getUser_name()));
+            nameValuePairs.add(new BasicNameValuePair("user_password",user.getUser_password()));
             nameValuePairs.add(new BasicNameValuePair("user_rememberme", null));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             //Execute HTTP Post Request
-            response=httpclient.execute(httppost);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             final String response = httpclient.execute(httppost, responseHandler);
             System.out.println("Response : " + response);
             runOnUiThread(new Runnable() {
                 public void run() {
-                    tv.setText("Response from PHP : " + response);
+//                    tv.setText("Response from PHP : " + response);
                     dialog.dismiss();
                 }
             });
@@ -96,8 +98,12 @@ public class Main extends Activity {
 
                 JSONObject obj = new JSONObject(response);
                 int user_id = obj.getInt("user_id");
+                user.setUser_id(user_id);
+                user.setLoggedIn(true);
                 Intent intent = new Intent(Main.this, UserPage.class);
-                intent.putExtra("user_id", user_id);
+                intent.putExtra("user_id", user.getUser_id());
+                intent.putExtra("user_name",user.getUser_name());
+                intent.putExtra("user_password", user.getUser_password());
                 startActivity(intent);
             }
 

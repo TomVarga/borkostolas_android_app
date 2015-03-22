@@ -8,6 +8,7 @@ import hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Score;
 import hu.tvarga.bor.borkostolas.model.bean.ScoredWine;
+import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
 import android.app.ActionBar;
@@ -104,6 +105,7 @@ public class UserPage extends Activity {
 
         Bundle extras = getIntent().getExtras();
         final int user_id = extras.getInt("user_id");
+        final User user = new User(user_id, extras.getString("user_name"), extras.getString("user_password"));
         final TextView content = (TextView) findViewById(R.id.contentTV);
 
         context = getBaseContext();
@@ -251,7 +253,7 @@ public class UserPage extends Activity {
                                 RemoteDAO dao = new RemoteDAO();
                                 remoteScores = dao.getScores(user_id);
                                 if (remoteScores.size() > 0) {
-                                    final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user_id);
+                                    final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user);
                                     updateLocalScoredWines(context, user_id);
                                     adapterNotifyListener.onEvent();
                                     runOnUiThread(new Runnable() {

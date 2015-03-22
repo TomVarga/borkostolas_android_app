@@ -36,7 +36,7 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
     public LocalDAO(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        System.out.println("lDAO created");
+//        System.out.println("lDAO created");
     }
 
     // Method is called during creation of the database
@@ -202,11 +202,12 @@ public class LocalDAO extends SQLiteOpenHelper implements DAO {
             );
             // don't update if scores are equal or the remote score was before the local one
             if (localScore.getScore() == remoteScore.getScore() || remoteScore.getTimestamp().before(localScore.getTimestamp())){
-                if (remoteScore.getWine_id() == 2){
-                    System.out.println("LDAO 2 add");
-                    System.out.println(remoteScore.toString());
-                    System.out.println(localScore.toString());
-                }
+                // DEBUG:
+//                if (remoteScore.getWine_id() == 2){
+//                    System.out.println("LDAO 2 add");
+//                    System.out.println(remoteScore.toString());
+//                    System.out.println(localScore.toString());
+//                }
 
                 db.close();
                 return false;

@@ -3,6 +3,8 @@ package hu.tvarga.bor.borkostolas.model.bean;
 
 import java.util.Date;
 
+import static hu.tvarga.bor.borkostolas.controller.JSONParser.dateToString;
+
 public class Score {
     private int user_id;
     private int wine_id;
@@ -55,7 +57,11 @@ public class Score {
                 "user_id=" + user_id +
                 ", wine_id=" + wine_id +
                 ", score=" + score +
-                ", timestamp=" + timestamp +
+                ", timestamp=" + dateToString(timestamp) +
                 '}';
+    }
+
+    public String toString2() {
+        return "new Score(" + user_id + wine_id + score + "\"" + dateToString(timestamp) + "\"";
     }
 }
