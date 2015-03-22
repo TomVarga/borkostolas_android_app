@@ -14,7 +14,7 @@
     <item android:id="@+id/action_ertekel"
           android:title="@string/action_ertekel"
           android:orderInCategory="200"
-          android:icon="@drawable/ic_action_done"
+          android:icon="@drawable/ic_action_edit"
           app:showAsAction="ifRoom"
         />
     <item android:id="@+id/action_logout"
