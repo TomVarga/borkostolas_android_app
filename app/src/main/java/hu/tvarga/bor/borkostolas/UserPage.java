@@ -349,10 +349,4 @@ public class UserPage extends ActionBarActivity {
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        user.setPrefs(context);
-    }
-
 }

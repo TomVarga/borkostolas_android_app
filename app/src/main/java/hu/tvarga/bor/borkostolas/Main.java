@@ -132,9 +132,4 @@ public class Main extends Activity {
         });
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        user.setPrefs(context);
-    }
 }
