@@ -26,7 +26,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.model.bean.User;
+
+import static hu.tvarga.bor.borkostolas.R.string.error_noNetworkAccess;
 
 public class Main extends Activity {
 
@@ -55,12 +58,20 @@ public class Main extends Activity {
         b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = ProgressDialog.show(Main.this, "", getResources().getString(R.string.action_userValidation), true);
-                new Thread(new Runnable() {
-                    public void run() {
-                        login();
-                    }
-                }).start();
+                if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+                    dialog = ProgressDialog.show(Main.this, "", getResources().getString(R.string.action_userValidation), true);
+                    new Thread(new Runnable() {
+                        public void run() {
+                            login();
+                        }
+                    }).start();
+                }else{
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(Main.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
     }
@@ -85,7 +96,7 @@ public class Main extends Activity {
             System.out.println("Response : " + response);
             runOnUiThread(new Runnable() {
                 public void run() {
-//                    tv.setText("Response from PHP : " + response);
+                    //                    tv.setText("Response from PHP : " + response);
                     dialog.dismiss();
                 }
             });
@@ -109,7 +120,6 @@ public class Main extends Activity {
                 Intent intent = new Intent(Main.this, UserPage.class);
                 startActivity(intent);
             }
-
         }catch(Exception e){
             dialog.dismiss();
             System.out.println("Exception : " + e.getMessage());
