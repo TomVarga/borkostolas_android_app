@@ -52,7 +52,6 @@ public class Results extends ActionBarActivity {
 
                 new Thread(new Runnable() {
                     public void run() {
-
                         HttpPost httppost;
                         HttpClient httpclient;
                         List<NameValuePair> nameValuePairs;
@@ -77,8 +76,6 @@ public class Results extends ActionBarActivity {
                         }
                     }
                 }).start();
-
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
