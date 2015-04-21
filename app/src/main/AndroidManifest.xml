@@ -22,6 +22,8 @@
 
         <activity android:name=".UserPage"/>
         <activity android:name=".Results"/>
+        <activity android:name=".Register"/>
+        <activity android:name=".ForgotPassword"/>
 
         <meta-data
             android:name="com.google.android.gms.version"

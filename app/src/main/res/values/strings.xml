@@ -4,6 +4,8 @@
     <string name="action_settings">Beállítások</string>
     <string name="action_ertekel">Értékelések</string>
     <string name="action_login">Bejelentkezés</string>
+    <string name="action_register">Regisztráció</string>
+    <string name="action_forgotPassword">Elfelejtettem a jelszavam</string>
     <string name="action_logout">Kijelentkezés</string>
     <string name="action_successfulLogin">Sikeres bejelentkezés</string>
     <string name="action_userValidation">Felhasználó hitelesítése...</string>

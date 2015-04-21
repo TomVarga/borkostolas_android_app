@@ -35,7 +35,7 @@ public class Main extends Activity {
 
     User user;
     Context context;
-    Button b;
+    Button b, r, f;
     EditText et,pass;
     TextView tv;
     HttpPost httppost;
@@ -50,10 +50,11 @@ public class Main extends Activity {
 
         context = getBaseContext();
 
-        b = (Button)findViewById(R.id.Button01);
+        b = (Button)findViewById(R.id.Login);
+        r = (Button)findViewById(R.id.Register);
+        f = (Button)findViewById(R.id.ForgotPassword);
         et = (EditText)findViewById(R.id.username);
         pass= (EditText)findViewById(R.id.password);
-        tv = (TextView)findViewById(R.id.tv);
 
         b.setOnClickListener(new OnClickListener() {
             @Override
@@ -63,6 +64,42 @@ public class Main extends Activity {
                     new Thread(new Runnable() {
                         public void run() {
                             login();
+                        }
+                    }).start();
+                }else{
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(Main.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+        r.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+                    new Thread(new Runnable() {
+                        public void run() {
+                            register();
+                        }
+                    }).start();
+                }else{
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(Main.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+        f.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+                    new Thread(new Runnable() {
+                        public void run() {
+                            forgotPassword();
                         }
                     }).start();
                 }else{
@@ -124,6 +161,16 @@ public class Main extends Activity {
             dialog.dismiss();
             System.out.println("Exception : " + e.getMessage());
         }
+    }
+
+    void register(){
+        Intent intent = new Intent(Main.this, Register.class);
+        startActivity(intent);
+    }
+
+    void forgotPassword(){
+        Intent intent = new Intent(Main.this, ForgotPassword.class);
+        startActivity(intent);
     }
     public void showAlert(){
         Main.this.runOnUiThread(new Runnable() {

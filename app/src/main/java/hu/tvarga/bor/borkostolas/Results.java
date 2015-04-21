@@ -50,7 +50,7 @@ public class Results extends ActionBarActivity {
         user = new User();
         user.populateFromPrefs(context);
 
-        WebView myWebView = (WebView) findViewById(R.id.webView);
+        WebView myWebView = (WebView) findViewById(R.id.webViewResults);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         if (NetworkChecker.haveNetworkConnection(getBaseContext())) {

@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center|center_vertical"
-    >
+    android:weightSum="1">
     <TextView
         android:id="@+id/tv0"
         android:layout_width="fill_parent"
@@ -43,14 +43,20 @@
     </EditText>
     <Button
         android:text="@string/action_login"
-        android:id="@+id/Button01"
+        android:id="@+id/Login"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     </Button>
-    <TextView
-        android:id="@+id/tv"
+    <Button
+        android:text="@string/action_register"
+        android:id="@+id/Register"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        />
+        android:layout_height="wrap_content">
+    </Button>
+    <Button
+        android:text="@string/action_forgotPassword"
+        android:id="@+id/ForgotPassword"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    </Button>
 </LinearLayout>

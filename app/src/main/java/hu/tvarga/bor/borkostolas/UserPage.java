@@ -254,7 +254,7 @@ public class UserPage extends ActionBarActivity {
                             if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
                                 RemoteDAO dao = new RemoteDAO();
                                 remoteScores = dao.getScores(user_id);
-                                if (remoteScores.size() > 0) {
+//                                if (remoteScores.size() > 0) {
                                     final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user);
                                     updateLocalScoredWines(context, user_id);
                                     adapterNotifyListener.onEvent();
@@ -279,7 +279,7 @@ public class UserPage extends ActionBarActivity {
                                             Toast.makeText(UserPage.this, updateSucceeded ? action_scoreSyncSuccess : action_scoreSyncFail, Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                                }
+//                                }
                             }else{
                                 runOnUiThread(new Runnable() {
                                     public void run() {
