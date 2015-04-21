@@ -1,5 +1,6 @@
 package hu.tvarga.bor.borkostolas;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -27,9 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.tvarga.bor.borkostolas.controller.JSONParser;
+import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.model.bean.Score;
 import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
+
+import static hu.tvarga.bor.borkostolas.R.string.error_noNetworkAccess;
 
 
 public class Results extends ActionBarActivity {
@@ -48,34 +53,15 @@ public class Results extends ActionBarActivity {
         WebView myWebView = (WebView) findViewById(R.id.webView);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        myWebView.loadUrl("http://bor.tvarga.hu/services/androidCalculator.php?user_id="+user.getUser_id());
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        HttpPost httppost;
-                        HttpClient httpclient;
-                        List<NameValuePair> nameValuePairs;
-                        try {
-                            httpclient = new DefaultHttpClient();
-                            httppost = new HttpPost("http://bor.tvarga.hu/services/androidCalculator.php"); // make sure the url is correct.
-                            nameValuePairs = new ArrayList<>(2);
-                            nameValuePairs.add(new BasicNameValuePair("user_id", user.getUser_id() + ""));
-//                            nameValuePairs.add(new BasicNameValuePair("user_name", user.getUser_name() + ""));
-                            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                            String result = httpclient.execute(httppost, responseHandler);
-//                JSONArray jsonArray = new JSONArray(result);
-//                for (int i=0; i < jsonArray.length(); i++ ){
-//                    JSONObject obj = (JSONObject) jsonArray.get(i);
-//                    Score score = JSONParser.getScoreFromJSONObj(obj);
-//                    scores.add(score);
-//                }
-//                            System.out.println("Response : " + result);
-                        } catch (Exception e) {
-                            System.out.println("Exception : " + e.getMessage());
-                        }
-                    }
-                }).start();
+        if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
+            myWebView.loadUrl("http://bor.tvarga.hu/services/androidCalculator.php?user_id=" + user.getUser_id());
+        }else{
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(Results.this, error_noNetworkAccess, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
