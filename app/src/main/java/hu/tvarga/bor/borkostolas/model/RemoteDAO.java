@@ -37,7 +37,7 @@ public class RemoteDAO implements DAO {
 
         try{
             httpclient=new DefaultHttpClient();
-            httppost= new HttpPost("http://bor.tvarga.hu/getWineData.php"); // make sure the url is correct.
+            httppost= new HttpPost("http://bor.tvarga.hu/services/getWineData.php"); // make sure the url is correct.
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             String result = httpclient.execute(httppost, responseHandler);
             JSONArray jsonArray = new JSONArray(result);
@@ -62,7 +62,7 @@ public class RemoteDAO implements DAO {
 
         try{
             httpclient=new DefaultHttpClient();
-            httppost= new HttpPost("http://bor.tvarga.hu/getWineScoresForUser.php"); // make sure the url is correct.
+            httppost= new HttpPost("http://bor.tvarga.hu/services/getWineScoresForUser.php"); // make sure the url is correct.
             nameValuePairs = new ArrayList<>(2);
             nameValuePairs.add(new BasicNameValuePair("user_id", user_id+""));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -94,7 +94,7 @@ public class RemoteDAO implements DAO {
 
         try{
             httpclient=new DefaultHttpClient();
-            httppost= new HttpPost("http://bor.tvarga.hu/addWineScoresToDB.php"); // make sure the url is correct.
+            httppost= new HttpPost("http://bor.tvarga.hu/services/addWineScoresToDB.php"); // make sure the url is correct.
             nameValuePairs = new ArrayList<>(2);
             nameValuePairs.add(new BasicNameValuePair("login","true"));
             nameValuePairs.add(new BasicNameValuePair("user_name", user.getUser_name()));

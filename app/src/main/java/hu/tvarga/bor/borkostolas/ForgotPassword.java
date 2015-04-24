@@ -19,7 +19,7 @@ public class ForgotPassword extends Activity {
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
-            myWebView.loadUrl("http://bor.tvarga.hu/androidPasswordReset.html");
+            myWebView.loadUrl("http://bor.tvarga.hu/androidPasswordReset.php");
         } else {
             runOnUiThread(new Runnable() {
                 public void run() {

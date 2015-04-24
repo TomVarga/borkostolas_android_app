@@ -19,7 +19,7 @@ public class Register extends Activity {
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
-            myWebView.loadUrl("http://bor.tvarga.hu/androidRegister.html");
+            myWebView.loadUrl("http://bor.tvarga.hu/androidRegister.php");
         } else {
             runOnUiThread(new Runnable() {
                 public void run() {
