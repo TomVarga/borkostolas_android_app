@@ -84,8 +84,6 @@ public class UserPage extends ActionBarActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
-        if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
-        menu.removeItem(nActionId);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_navigation, menu);
         return true;
