@@ -138,7 +138,7 @@ public class Main extends Activity {
                 }
             });
 
-            if(response.equalsIgnoreCase("No Such User Found")){
+            if(response.equalsIgnoreCase("Login Failed")){
                 showAlert();
             }else{
                 runOnUiThread(new Runnable() {
@@ -176,8 +176,8 @@ public class Main extends Activity {
         Main.this.runOnUiThread(new Runnable() {
             public void run() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
-                builder.setTitle(R.string.error_loginError);
-                builder.setMessage(R.string.error_error)
+                builder.setTitle(R.string.error_error);
+                builder.setMessage(R.string.error_loginError)
                         .setCancelable(false)
                         .setPositiveButton(R.string.action_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
