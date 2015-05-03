@@ -28,6 +28,7 @@ import java.util.Date;
 import hu.tvarga.bor.borkostolas.controller.DBSyncController;
 import hu.tvarga.bor.borkostolas.controller.NetworkChecker;
 import hu.tvarga.bor.borkostolas.controller.OnAdapterNeedsNotify;
+import hu.tvarga.bor.borkostolas.controller.WinesAdapter;
 import hu.tvarga.bor.borkostolas.model.LocalDAO;
 import hu.tvarga.bor.borkostolas.model.RemoteDAO;
 import hu.tvarga.bor.borkostolas.model.bean.Score;
@@ -323,30 +324,6 @@ public class UserPage extends ActionBarActivity {
     }
 
 
-    public class WinesAdapter extends ArrayAdapter<ScoredWine> {
 
-        public WinesAdapter(Context context, ArrayList<ScoredWine> wines) {
-            super(context, 0, wines);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ScoredWine wine = getItem(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.winerow, parent, false);
-            }
-
-            TextView tvName = (TextView) convertView.findViewById(R.id.wineRowName);
-            TextView tvScore = (TextView) convertView.findViewById(R.id.wineRowScore);
-
-            tvName.setText(wine.getWine_name());
-            Double score = wine.getWine_score();
-            tvScore.setText(getFormattedScore(score));
-
-            return convertView;
-        }
-
-    }
 
 }
