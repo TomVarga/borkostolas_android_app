@@ -65,7 +65,7 @@ public class JSONParser {
     }
 
     public static String dateToString(java.util.Date date){
-        String timestmapString = timestampFormat.format(date);
-        return timestmapString;
+        String timestampString = timestampFormat.format(date);
+        return timestampString;
     }
 }
