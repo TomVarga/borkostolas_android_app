@@ -189,4 +189,17 @@ public class Main extends Activity {
         });
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        et = (EditText)findViewById(R.id.username);
+        pass= (EditText)findViewById(R.id.password);
+        et.setText("");
+        pass.setText("");
+    }
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
 }
