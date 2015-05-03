@@ -40,6 +40,7 @@ import static hu.tvarga.bor.borkostolas.R.string.error_noNetworkAccess;
 public class Results extends ActionBarActivity {
     User user;
     Context context;
+    int nActionId = R.id.action_results;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class Results extends ActionBarActivity {
 
     public boolean onCreateOptionsMenu(Menu menu){
         if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        menu.removeItem(nActionId);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_navigation, menu);
         return true;
@@ -74,6 +76,7 @@ public class Results extends ActionBarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        menu.removeItem(nActionId);
         return true;
     }
 

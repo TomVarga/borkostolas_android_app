@@ -6,16 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -36,7 +33,11 @@ import hu.tvarga.bor.borkostolas.model.bean.ScoredWine;
 import hu.tvarga.bor.borkostolas.model.bean.User;
 import hu.tvarga.bor.borkostolas.model.bean.Wine;
 
-import static hu.tvarga.bor.borkostolas.R.string.*;
+import static hu.tvarga.bor.borkostolas.R.string.action_scoreSyncFail;
+import static hu.tvarga.bor.borkostolas.R.string.action_scoreSyncSuccess;
+import static hu.tvarga.bor.borkostolas.R.string.action_wineDBUpdateFail;
+import static hu.tvarga.bor.borkostolas.R.string.action_wineDBUpdateSucces;
+import static hu.tvarga.bor.borkostolas.R.string.error_noNetworkAccess;
 
 public class UserPage extends ActionBarActivity {
     ArrayList<Wine> localWines;
@@ -47,6 +48,7 @@ public class UserPage extends ActionBarActivity {
     OnAdapterNeedsNotify adapterNotifyListener;
     ProgressDialog dialog = null;
     User user;
+    int nActionId = R.id.action_ertekel;
 
     public void updateLocalScoredWines(Context context, int user_id){
         LocalDAO lDAO = new LocalDAO(context);
@@ -83,6 +85,7 @@ public class UserPage extends ActionBarActivity {
 
     public boolean onCreateOptionsMenu(Menu menu){
         if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        menu.removeItem(nActionId);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_navigation, menu);
         return true;
@@ -91,6 +94,7 @@ public class UserPage extends ActionBarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (user.isLoggedIn()) menu.removeItem(R.id.action_login);
+        menu.removeItem(nActionId);
         return true;
     }
 
@@ -322,8 +326,4 @@ public class UserPage extends ActionBarActivity {
         }
         return sScore;
     }
-
-
-
-
 }
