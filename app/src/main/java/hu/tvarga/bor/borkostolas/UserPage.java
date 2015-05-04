@@ -255,34 +255,30 @@ public class UserPage extends ActionBarActivity {
                     public void run() {
                         try{
                             if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
-                                //RemoteDAO dao = new RemoteDAO();
-                                //remoteScores = dao.getScores(user_id);
-//                                if (remoteScores.size() > 0) {
-                                    final boolean updateSucceeded = dbSyncController.syncScores(context, user);
-                                    updateLocalScoredWines(context, user_id);
-                                    adapterNotifyListener.onEvent();
+                                final boolean updateSucceeded = dbSyncController.syncScores(context, user);
+                                updateLocalScoredWines(context, user_id);
+                                adapterNotifyListener.onEvent();
 
-                                    // update the details view if we have to
-                                    final EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
-                                    if (scoreET.isFocusable()){
-                                        LocalDAO lDAO = new LocalDAO(context);
-                                        ScoredWine wine = (ScoredWine) scoreET.getTag();
-                                        final Double score = lDAO.getScore(wine.getUser_id(), wine.getWine_id());
-
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                scoreET.setText(getFormattedScore(score));
-                                            }
-                                        });
-                                    }
+                                // update the details view if we have to
+                                final EditText scoreET = (EditText) findViewById(R.id.detailsScoreET);
+                                if (scoreET.isFocusable()){
+                                    LocalDAO lDAO = new LocalDAO(context);
+                                    ScoredWine wine = (ScoredWine) scoreET.getTag();
+                                    final Double score = lDAO.getScore(wine.getUser_id(), wine.getWine_id());
 
                                     runOnUiThread(new Runnable() {
                                         public void run() {
-                                            dialog.dismiss();
-                                            Toast.makeText(UserPage.this, updateSucceeded ? action_scoreSyncSuccess : action_scoreSyncFail, Toast.LENGTH_SHORT).show();
+                                            scoreET.setText(getFormattedScore(score));
                                         }
                                     });
-//                                }
+                                }
+
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        dialog.dismiss();
+                                        Toast.makeText(UserPage.this, updateSucceeded ? action_scoreSyncSuccess : action_scoreSyncFail, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }else{
                                 runOnUiThread(new Runnable() {
                                     public void run() {
