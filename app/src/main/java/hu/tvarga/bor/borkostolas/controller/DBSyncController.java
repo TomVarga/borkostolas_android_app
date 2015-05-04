@@ -32,9 +32,10 @@ public class DBSyncController {
         return true;
     }
 
-    public boolean syncScores(Context context, ArrayList<Score> remoteScores, User user) {
+    public boolean syncScores(Context context, User user) {
         LocalDAO lDAO = new LocalDAO(context);
         RemoteDAO rDAO = new RemoteDAO();
+        ArrayList<Score> remoteScores = rDAO.getScores(user.getUser_id());
         ArrayList<Score> localScores = lDAO.getScores(user.getUser_id());
 
         // update local DB

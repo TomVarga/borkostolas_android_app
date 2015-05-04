@@ -42,7 +42,7 @@ import static hu.tvarga.bor.borkostolas.R.string.error_noNetworkAccess;
 public class UserPage extends ActionBarActivity {
     ArrayList<Wine> localWines;
     ArrayList<Wine> remoteWines;
-    ArrayList<Score> remoteScores;
+//    ArrayList<Score> remoteScores;
     ArrayList<ScoredWine> localScoredWines;
     Context context;
     OnAdapterNeedsNotify adapterNotifyListener;
@@ -255,10 +255,10 @@ public class UserPage extends ActionBarActivity {
                     public void run() {
                         try{
                             if (NetworkChecker.haveNetworkConnection(getBaseContext())) {
-                                RemoteDAO dao = new RemoteDAO();
-                                remoteScores = dao.getScores(user_id);
+                                //RemoteDAO dao = new RemoteDAO();
+                                //remoteScores = dao.getScores(user_id);
 //                                if (remoteScores.size() > 0) {
-                                    final boolean updateSucceeded = dbSyncController.syncScores(context, remoteScores, user);
+                                    final boolean updateSucceeded = dbSyncController.syncScores(context, user);
                                     updateLocalScoredWines(context, user_id);
                                     adapterNotifyListener.onEvent();
 
